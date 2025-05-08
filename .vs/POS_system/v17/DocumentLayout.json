@@ -1,0 +1,70 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "D:\\POS_system\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{DD7BA1CE-5F66-42CF-86BC-37AD62BF2B4D}|POS_system\\POS_system.csproj|d:\\pos_system\\pos_system\\form1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
+      "RelativeMoniker": "D:0:0:{DD7BA1CE-5F66-42CF-86BC-37AD62BF2B4D}|POS_system\\POS_system.csproj|solutionrelative:pos_system\\form1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{DD7BA1CE-5F66-42CF-86BC-37AD62BF2B4D}|POS_system\\POS_system.csproj|D:\\POS_system\\pos_system\\form1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{DD7BA1CE-5F66-42CF-86BC-37AD62BF2B4D}|POS_system\\POS_system.csproj|solutionrelative:pos_system\\form1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{DD7BA1CE-5F66-42CF-86BC-37AD62BF2B4D}|POS_system\\POS_system.csproj|D:\\POS_system\\pos_system\\form1.designer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{DD7BA1CE-5F66-42CF-86BC-37AD62BF2B4D}|POS_system\\POS_system.csproj|solutionrelative:pos_system\\form1.designer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 2,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "Form1.Designer.cs",
+              "DocumentMoniker": "D:\\POS_system\\POS_system\\Form1.Designer.cs",
+              "RelativeDocumentMoniker": "POS_system\\Form1.Designer.cs",
+              "ToolTip": "D:\\POS_system\\POS_system\\Form1.Designer.cs",
+              "RelativeToolTip": "POS_system\\Form1.Designer.cs",
+              "ViewState": "AgIAAAIAAAAAAAAAAAAxwD8AAABHAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-05-04T12:24:14.417Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "Form1.cs",
+              "DocumentMoniker": "D:\\POS_system\\POS_system\\Form1.cs",
+              "RelativeDocumentMoniker": "POS_system\\Form1.cs",
+              "ToolTip": "D:\\POS_system\\POS_system\\Form1.cs",
+              "RelativeToolTip": "POS_system\\Form1.cs",
+              "ViewState": "AgIAACIAAAAAAAAAAAAYwOQAAAAvAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-05-01T06:41:20.804Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "Form1.cs [Design]",
+              "DocumentMoniker": "D:\\POS_system\\POS_system\\Form1.cs",
+              "RelativeDocumentMoniker": "POS_system\\Form1.cs",
+              "ToolTip": "D:\\POS_system\\POS_system\\Form1.cs [Design]",
+              "RelativeToolTip": "POS_system\\Form1.cs [Design]",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-05-01T06:40:14.101Z",
+              "EditorCaption": " [Design]"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
