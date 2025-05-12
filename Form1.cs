@@ -5,6 +5,22 @@ namespace POS
 {
     public partial class Form1 : Form
     {
+        //Dict to soft load.
+        //TODO: Add additional fields to search and sort functions.
+        //Dictionary<string, decimal> products = new Dictionary<string, decimal>
+        //{
+        //    { "Momo", 200m },
+        //    { "Pizza", 700m },
+        //    { "Chicken Chilly", 200m },
+        //    { "C.momo", 240m },
+        //    { "Salad", 100m },
+        //    { "Fried Rice", 300m },
+        //    { "Spaghetti", 250m },
+        //    { "Fried Chicken", 1420m },
+        //    { "Pasta", 210m },
+        //    { "Fries", 180m }
+        //};
+
         Dictionary<string, decimal> products = new Dictionary<string, decimal>();
         Dictionary<string, string> productImages = new Dictionary<string, string>();
 
