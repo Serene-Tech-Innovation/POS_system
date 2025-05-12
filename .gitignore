@@ -1,0 +1,92 @@
+## Ignore Visual Studio temporary files, build results, and
+## user-specific files
+
+# User-specific files
+*.rsuser
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# User-specific files (MonoDevelop/Xamarin Studio)
+*.userprefs
+
+# Build results
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+[Aa][Rr][Mm]/
+bld/
+[Bb]in/
+[Oo]bj/
+
+# .NET Core
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+# ASP.NET Scaffolding
+ScaffoldingReadMe.txt
+
+# .vs folder (Visual Studio)
+.vs/
+
+# Rider
+.idea/
+
+# Auto-generated files
+Generated_Code/
+
+# Backup & log files
+*.log
+*.tlog
+*.bak
+*.tmp
+*.cache
+*.vsidx
+*.sdf
+
+# NuGet
+*.nupkg
+*.snupkg
+*.nuspec
+.nuget/
+packages/
+*.Symbols.nupkg
+
+# Windows image file caches
+Thumbs.db
+ehthumbs.db
+
+# System files
+.DS_Store
+desktop.ini
+$RECYCLE.BIN/
+
+# Logs
+*.log
+*.pid
+*.seed
+
+# Python virtualenvs (if any ETL/Python work is involved)
+venv/
+.env/
+*.pyc
+__pycache__/
+
+# Others
+*.swp
+*.swo
+*~
+
+# Ignore the global JetBrains IDE settings
+.idea/
+
+# Ignore node_modules if any frontend project exists
+node_modules/
+dist/
+
+# Ignore local secrets or configuration files
+secrets.json
+appsettings.*.local.json
