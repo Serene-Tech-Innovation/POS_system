@@ -45,6 +45,23 @@ namespace POS
                     }
                 }
             }
+
+            if (products == null)
+            {
+                products = new Dictionary<string, decimal>
+                {
+                    { "Momo", 200m },
+                    { "Pizza", 700m },
+                    { "Chicken Chilly", 200m },
+                    { "C.momo", 240m },
+                    { "Salad", 100m },
+                    { "Fried Rice", 300m },
+                    { "Spaghetti", 250m },
+                    { "Fried Chicken", 1420m },
+                    { "Pasta", 210m },
+                    { "Fries", 180m }
+                };
+            }
         }
 
         // Quantity tracker
@@ -84,14 +101,23 @@ namespace POS
                 //string imagePath = Path.Combine("../../../Images", product.Key.ToLower().Replace(" ", "_") + ".jpg"); //For Dict Only Load
                 string imagePath = Path.Combine("../../../", productImages[product.Key]); //For Postgres DB Load
 
+
                 if (File.Exists(imagePath))
                 {
                     productImage.Image = Image.FromFile(imagePath);
                 }
                 else
                 {
-                    productImage.BackColor = Color.LightGray;
-                    productImage.Image = null;
+                    imagePath = Path.Combine("../../../Images", product.Key.ToLower().Replace(" ", "_") + ".jpg"); //For Dict Only Load
+                    if (File.Exists(imagePath))
+                    {
+                        productImage.Image = Image.FromFile(imagePath);
+                    }
+                    else
+                    {
+                        productImage.BackColor = Color.LightGray;
+                        productImage.Image = null;
+                    }
                 }
 
                 var productPrice = new Label
