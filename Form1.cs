@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Text;
 using Npgsql;
 
@@ -5,24 +6,11 @@ namespace POS
 {
     public partial class Form1 : Form
     {
-        //Dict to soft load.
-        //TODO: Add additional fields to search and sort functions.
-        //Dictionary<string, decimal> products = new Dictionary<string, decimal>
-        //{
-        //    { "Momo", 200m },
-        //    { "Pizza", 700m },
-        //    { "Chicken Chilly", 200m },
-        //    { "C.momo", 240m },
-        //    { "Salad", 100m },
-        //    { "Fried Rice", 300m },
-        //    { "Spaghetti", 250m },
-        //    { "Fried Chicken", 1420m },
-        //    { "Pasta", 210m },
-        //    { "Fries", 180m }
-        //};
 
         Dictionary<string, decimal> products = new Dictionary<string, decimal>();
         Dictionary<string, string> productImages = new Dictionary<string, string>();
+        Dictionary<string, List<string>> categoryToSubcategories = new();
+        Dictionary<string, List<string>> subcategoryToItems = new();
 
         private void LoadProductsFromDB()
         {
@@ -32,35 +20,93 @@ namespace POS
             {
                 conn.Open();
 
-                using (var cmd = new NpgsqlCommand("SELECT name, price, image_path FROM products", conn))
-                using (var reader = cmd.ExecuteReader())
+                //TRY
+                // Load products and images
+                try
                 {
-                    while (reader.Read())
+                    throw new NpgsqlException("Simulated error for testing");
+                    using (var cmd = new NpgsqlCommand("SELECT name, price, image_path FROM item", conn))
+                    using (var reader = cmd.ExecuteReader())
                     {
-                        string name = reader.GetString(0);
-                        decimal price = reader.GetDecimal(1);
-                        string imagePath = reader.IsDBNull(2) ? "" : reader.GetString(2);
-                        products[name] = price;
-                        productImages[name] = imagePath;
+                        while (reader.Read())
+                        {
+                            string name = reader.GetString(0);
+                            decimal price = reader.GetDecimal(1);
+                            string imagePath = reader.IsDBNull(2) ? "" : reader.GetString(2);
+                            products[name] = price;
+                            productImages[name] = imagePath;
+                        }
+                        reader.Close();
+                    }
+
+                    // Load categories and subcategories
+                    using (var cmd = new NpgsqlCommand("SELECT c.name AS category_name, s.name AS subcategory_name FROM subcategory s JOIN category c ON s.category_id = c.id", conn))
+                    using (var reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            string category = reader.GetString(0);
+                            string subcategory = reader.GetString(1);
+                            if (!categoryToSubcategories.ContainsKey(category))
+                                categoryToSubcategories[category] = new List<string>();
+                            categoryToSubcategories[category].Add(subcategory);
+                        }
+                        reader.Close();
+                    }
+
+                    // Load subcategories to items
+                    using (var cmd = new NpgsqlCommand("SELECT s.name AS subcategory_name, i.name AS item_name FROM item i JOIN subcategory s ON i.subcategory_id = s.id", conn))
+                    using (var reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            string subcategory = reader.GetString(0);
+                            string item = reader.GetString(1);
+                            if (!subcategoryToItems.ContainsKey(subcategory))
+                                subcategoryToItems[subcategory] = new List<string>();
+                            subcategoryToItems[subcategory].Add(item);
+                        }
+                        reader.Close();
                     }
                 }
-            }
-
-            if (products == null)
-            {
-                products = new Dictionary<string, decimal>
+                catch(NpgsqlException ex)
                 {
-                    { "Momo", 200m },
-                    { "Pizza", 700m },
-                    { "Chicken Chilly", 200m },
-                    { "C.momo", 240m },
-                    { "Salad", 100m },
-                    { "Fried Rice", 300m },
-                    { "Spaghetti", 250m },
-                    { "Fried Chicken", 1420m },
-                    { "Pasta", 210m },
-                    { "Fries", 180m }
-                };
+                    Console.WriteLine("Error loading products: " + ex.Message);
+                    products = new Dictionary<string, decimal>
+                    {
+                        { "C Momo", 250 },
+                        { "Chicken Chilly", 300 },
+                        { "Fried Chicken", 320 },
+                        { "Fried Rice", 180 },
+                        { "Fries", 120 },
+                        { "Momo", 150 },
+                        { "Pasta", 280 },
+                        { "Pizza", 400 },
+                        { "Salad", 160 },
+                        { "Spaghetti", 300 }
+                    };
+
+                    productImages = new Dictionary<string, string>
+                    {
+                        { "C Momo", "c_momo.jpg" },
+                        { "Chicken Chilly", "chicken_chilly.jpg" },
+                        { "Fried Chicken", "fried_chicken.jpg" },
+                        { "Fried Rice", "fried_rice.jpg" },
+                        { "Fries", "fries.jpg" },
+                        { "Momo", "momo.jpg" },
+                        { "Pasta", "pasta.jpg" },
+                        { "Pizza", "pizza.jpg" },
+                        { "Salad", "salad.jpg" },
+                        { "Spaghetti", "spaghetti.jpg" }
+                    };
+
+                }
+
+
+                
+                conn.Close();
+
+                //
             }
         }
 
@@ -71,6 +117,19 @@ namespace POS
         {
             InitializeComponent();
             LoadProductsFromDB();   //Load from Postgres DB
+            
+            cmbCategory.Items.AddRange(categoryToSubcategories.Keys.ToArray());
+            cmbCategory.SelectedIndexChanged += (s, e) =>
+            {
+                cmbSubcategory.Items.Clear();
+                if (cmbCategory.SelectedItem != null)
+                    cmbSubcategory.Items.AddRange(categoryToSubcategories[cmbCategory.SelectedItem.ToString()].ToArray());
+            };
+
+            btnFilter.Click += (s, e) => ApplyFilters();
+            txtSearch.TextChanged += (s, e) => ApplyFilters();
+            cmbSort.SelectedIndexChanged += (s, e) => ApplyFilters();
+
             foreach (var product in products)
             {
                 Console.WriteLine(product);
@@ -98,8 +157,9 @@ namespace POS
                     SizeMode = PictureBoxSizeMode.StretchImage
                 };
 
+                Debug.WriteLine(productImages[product.Key]);
                 //string imagePath = Path.Combine("../../../Images", product.Key.ToLower().Replace(" ", "_") + ".jpg"); //For Dict Only Load
-                string imagePath = Path.Combine("../../../", productImages[product.Key]); //For Postgres DB Load
+                string imagePath = Path.Combine("../../../Images", productImages[product.Key]); //For Postgres DB Load
 
 
                 if (File.Exists(imagePath))
@@ -238,34 +298,7 @@ namespace POS
             //LoadProductsFromDB();
         }
 
-        private void button1_Click(object sender, EventArgs e)
-        {
-        }
 
-        private void Total_Click(object sender, EventArgs e)
-        {
-        }
-
-        private void label1_Click(object sender, EventArgs e)
-        {
-        }
-
-        private void listBox1_SelectedIndexChanged(object sender, EventArgs e)
-        {
-        }
-
-        private void button2_Click(object sender, EventArgs e)
-        {
-        }
-
-        private void btnCheckout_Click_1(object sender, EventArgs e)
-        {
-            btnCheckout_Click(sender, e);
-        }
-
-        private void textBox1_TextChanged(object sender, EventArgs e)
-        {
-        }
 
         private void clear_Click(object sender, EventArgs e)
         {
@@ -293,5 +326,117 @@ namespace POS
                 }
             }
         }
+
+        private void ApplyFilters()
+        {
+            flowPanelItems.Controls.Clear();
+
+            string searchText = txtSearch.Text.ToLower();
+            string selectedCategory = cmbCategory.SelectedItem?.ToString();
+            string selectedSubcategory = cmbSubcategory.SelectedItem?.ToString();
+            decimal minPrice = numMinPrice.Value;
+            decimal maxPrice = numMaxPrice.Value;
+            string sortOption = cmbSort.SelectedItem?.ToString();
+
+            // Determine valid products
+            var filteredProducts = products
+                .Where(p =>
+                    (string.IsNullOrEmpty(searchText) || p.Key.ToLower().Contains(searchText)) &&
+                    (!string.IsNullOrEmpty(selectedCategory) ?
+                        categoryToSubcategories[selectedCategory].SelectMany(sc => subcategoryToItems.ContainsKey(sc) ? subcategoryToItems[sc] : new List<string>()).Contains(p.Key)
+                        : true) &&
+                    (!string.IsNullOrEmpty(selectedSubcategory) ?
+                        (subcategoryToItems.ContainsKey(selectedSubcategory) && subcategoryToItems[selectedSubcategory].Contains(p.Key))
+                        : true) &&
+                    (p.Value >= minPrice && p.Value <= maxPrice)
+                );
+
+            // Sorting
+            filteredProducts = sortOption switch
+            {
+                "Price Low to High" => filteredProducts.OrderBy(p => p.Value),
+                "Price High to Low" => filteredProducts.OrderByDescending(p => p.Value),
+                "A-Z" => filteredProducts.OrderBy(p => p.Key),
+                "Z-A" => filteredProducts.OrderByDescending(p => p.Key),
+                _ => filteredProducts
+            };
+
+            // Recreate product panels
+            foreach (var product in filteredProducts)
+            {
+                AddProductToPanel(product.Key, product.Value);
+            }
+        }
+
+        private void AddProductToPanel(string name, decimal price)
+        {
+            var productPanel = new Panel
+            {
+                Size = new Size(150, 200),
+                BorderStyle = BorderStyle.FixedSingle,
+                Margin = new Padding(10)
+            };
+
+            var productLabel = new Label
+            {
+                Text = name,
+                TextAlign = ContentAlignment.MiddleCenter,
+                Dock = DockStyle.Top,
+                Font = new Font("Segoe UI", 10, FontStyle.Bold),
+                Height = 40
+            };
+
+            var productImage = new PictureBox
+            {
+                Dock = DockStyle.Top,
+                Height = 80,
+                BorderStyle = BorderStyle.FixedSingle,
+                SizeMode = PictureBoxSizeMode.StretchImage
+            };
+
+            string imagePath = Path.Combine("../../../Images", productImages.ContainsKey(name) ? productImages[name] : name.ToLower().Replace(" ", "_") + ".jpg");
+            if (File.Exists(imagePath))
+                productImage.Image = Image.FromFile(imagePath);
+            else
+                productImage.BackColor = Color.LightGray;
+
+            var productPrice = new Label
+            {
+                Text = $"Rs. {price}",
+                TextAlign = ContentAlignment.MiddleCenter,
+                Dock = DockStyle.Top,
+                Font = new Font("Arial", 18, FontStyle.Bold),
+                Padding = new Padding(0, 5, 0, 0),
+                Height = 30
+            };
+
+            var addButton = new Button
+            {
+                Text = "Add to Cart",
+                Height = 30,
+                Dock = DockStyle.Bottom,
+                Tag = name
+            };
+            addButton.Click += (sender, e) =>
+            {
+                string productName = ((Button)sender).Tag.ToString();
+                if (cartQuantities.ContainsKey(productName))
+                    cartQuantities[productName]++;
+                else
+                    cartQuantities[productName] = 1;
+
+                UpdateCartDisplay();
+            };
+
+            productPanel.Controls.Add(addButton);
+            productPanel.Controls.Add(productPrice);
+            productPanel.Controls.Add(productImage);
+            productPanel.Controls.Add(productLabel);
+
+            flowPanelItems.Controls.Add(productPanel);
+        }
+    
+
+
     }
 }
