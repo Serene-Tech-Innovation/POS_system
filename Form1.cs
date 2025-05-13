@@ -299,6 +299,8 @@ namespace POS
             };
 
             string imagePath = Path.Combine("../../../Images", productImages.ContainsKey(name) ? productImages[name] : name.ToLower().Replace(" ", "_") + ".jpg");
+            Debug.WriteLine($"Image path for {name}: {imagePath}");
+
             if (File.Exists(imagePath))
                 using (var fs = new FileStream(imagePath, FileMode.Open, FileAccess.Read))
                 {
@@ -306,7 +308,6 @@ namespace POS
                 }
             else
                 productImage.BackColor = Color.LightGray;
-
             var productPrice = new Label
             {
                 Text = $"Rs. {price}",
@@ -327,8 +328,13 @@ namespace POS
             addButton.Click += (sender, e) =>
             {
                 string productName = ((Button)sender).Tag.ToString();
+                Console.WriteLine(productName);
                 if (cartQuantities.ContainsKey(productName))
+                {
+                    
                     cartQuantities[productName]++;
+                }
+
                 else
                     cartQuantities[productName] = 1;
 
