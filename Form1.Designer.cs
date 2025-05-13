@@ -59,12 +59,12 @@
             cartListBox.FormattingEnabled = true;
             cartListBox.Location = new Point(985, 91);
             cartListBox.Name = "cartListBox";
-            cartListBox.Size = new Size(307, 409);
+            cartListBox.Size = new Size(307, 619);
             cartListBox.TabIndex = 10;
             // 
             // lblTotal
             // 
-            lblTotal.Location = new Point(985, 524);
+            lblTotal.Location = new Point(982, 725);
             lblTotal.Name = "lblTotal";
             lblTotal.Size = new Size(213, 45);
             lblTotal.TabIndex = 11;
@@ -76,14 +76,14 @@
             flowPanelItems.BackColor = SystemColors.ButtonHighlight;
             flowPanelItems.Location = new Point(12, 91);
             flowPanelItems.Name = "flowPanelItems";
-            flowPanelItems.Size = new Size(832, 628);
+            flowPanelItems.Size = new Size(832, 720);
             flowPanelItems.TabIndex = 15;
             // 
             // btnCheckout
             // 
             btnCheckout.BackColor = Color.LawnGreen;
             btnCheckout.BackgroundImageLayout = ImageLayout.Center;
-            btnCheckout.Location = new Point(988, 561);
+            btnCheckout.Location = new Point(985, 762);
             btnCheckout.Name = "btnCheckout";
             btnCheckout.Size = new Size(116, 49);
             btnCheckout.TabIndex = 16;
@@ -105,7 +105,7 @@
             // clear
             // 
             clear.BackColor = Color.Red;
-            clear.Location = new Point(1194, 561);
+            clear.Location = new Point(1191, 762);
             clear.Name = "clear";
             clear.Size = new Size(98, 49);
             clear.TabIndex = 19;
@@ -116,7 +116,7 @@
             // btnRemoveItem
             // 
             btnRemoveItem.BackColor = Color.Red;
-            btnRemoveItem.Location = new Point(1194, 454);
+            btnRemoveItem.Location = new Point(1211, 679);
             btnRemoveItem.Name = "btnRemoveItem";
             btnRemoveItem.Size = new Size(81, 31);
             btnRemoveItem.TabIndex = 20;
@@ -128,8 +128,10 @@
             // 
             txtSearch.Location = new Point(12, 62);
             txtSearch.Name = "txtSearch";
+            txtSearch.PlaceholderText = "Search";
             txtSearch.Size = new Size(100, 23);
             txtSearch.TabIndex = 21;
+            txtSearch.TextChanged += txtSearch_TextChanged;
             // 
             // cmbSort
             // 
@@ -139,6 +141,7 @@
             cmbSort.Name = "cmbSort";
             cmbSort.Size = new Size(121, 23);
             cmbSort.TabIndex = 22;
+            cmbSort.SelectedIndexChanged += cmbSort_SelectedIndexChanged;
             // 
             // cmbCategory
             // 
@@ -147,6 +150,7 @@
             cmbCategory.Name = "cmbCategory";
             cmbCategory.Size = new Size(121, 23);
             cmbCategory.TabIndex = 23;
+            cmbCategory.SelectedIndexChanged += cmbCategory_SelectedIndexChanged;
             // 
             // cmbSubcategory
             // 
@@ -155,13 +159,17 @@
             cmbSubcategory.Name = "cmbSubcategory";
             cmbSubcategory.Size = new Size(121, 23);
             cmbSubcategory.TabIndex = 24;
+            cmbSubcategory.SelectedIndexChanged += cmbSubcategory_SelectedIndexChanged;
             // 
             // numMinPrice
             // 
             numMinPrice.Location = new Point(217, 62);
+            numMinPrice.Maximum = new decimal(new int[] { 10000, 0, 0, 0 });
             numMinPrice.Name = "numMinPrice";
             numMinPrice.Size = new Size(120, 23);
             numMinPrice.TabIndex = 25;
+            numMinPrice.ThousandsSeparator = true;
+            numMinPrice.ValueChanged += numMinPrice_ValueChanged;
             // 
             // numMaxPrice
             // 
@@ -170,6 +178,8 @@
             numMaxPrice.Name = "numMaxPrice";
             numMaxPrice.Size = new Size(120, 23);
             numMaxPrice.TabIndex = 26;
+            numMaxPrice.Value = new decimal(new int[] { 10000, 0, 0, 0 });
+            numMaxPrice.ValueChanged += numMaxPrice_ValueChanged;
             // 
             // btnFilter
             // 
@@ -201,7 +211,6 @@
             Controls.Add(cartListBox);
             Name = "Form1";
             Text = "Form1";
-            Load += Form1_Load;
             ((System.ComponentModel.ISupportInitialize)numMinPrice).EndInit();
             ((System.ComponentModel.ISupportInitialize)numMaxPrice).EndInit();
             ResumeLayout(false);

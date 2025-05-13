@@ -24,7 +24,7 @@ namespace POS
                 // Load products and images
                 try
                 {
-                    throw new NpgsqlException("Simulated error for testing");
+                    //throw new NpgsqlException("Simulated error for testing");
                     using (var cmd = new NpgsqlCommand("SELECT name, price, image_path FROM item", conn))
                     using (var reader = cmd.ExecuteReader())
                     {
@@ -36,7 +36,6 @@ namespace POS
                             products[name] = price;
                             productImages[name] = imagePath;
                         }
-                        reader.Close();
                     }
 
                     // Load categories and subcategories
@@ -51,7 +50,6 @@ namespace POS
                                 categoryToSubcategories[category] = new List<string>();
                             categoryToSubcategories[category].Add(subcategory);
                         }
-                        reader.Close();
                     }
 
                     // Load subcategories to items
@@ -66,12 +64,11 @@ namespace POS
                                 subcategoryToItems[subcategory] = new List<string>();
                             subcategoryToItems[subcategory].Add(item);
                         }
-                        reader.Close();
                     }
                 }
-                catch(NpgsqlException ex)
+                catch (NpgsqlException ex)
                 {
-                    Console.WriteLine("Error loading products: " + ex.Message);
+                    Debug.WriteLine("Error loading products: " + ex.Message);
                     products = new Dictionary<string, decimal>
                     {
                         { "C Momo", 250 },
@@ -103,7 +100,7 @@ namespace POS
                 }
 
 
-                
+
                 conn.Close();
 
                 //
@@ -117,7 +114,6 @@ namespace POS
         {
             InitializeComponent();
             LoadProductsFromDB();   //Load from Postgres DB
-            
             cmbCategory.Items.AddRange(categoryToSubcategories.Keys.ToArray());
             cmbCategory.SelectedIndexChanged += (s, e) =>
             {
@@ -126,100 +122,10 @@ namespace POS
                     cmbSubcategory.Items.AddRange(categoryToSubcategories[cmbCategory.SelectedItem.ToString()].ToArray());
             };
 
-            btnFilter.Click += (s, e) => ApplyFilters();
-            txtSearch.TextChanged += (s, e) => ApplyFilters();
-            cmbSort.SelectedIndexChanged += (s, e) => ApplyFilters();
 
             foreach (var product in products)
             {
-                Console.WriteLine(product);
-                var productPanel = new Panel
-                {
-                    Size = new Size(150, 200),
-                    BorderStyle = BorderStyle.FixedSingle,
-                    Margin = new Padding(10)
-                };
-
-                var productLabel = new Label
-                {
-                    Text = product.Key,
-                    TextAlign = ContentAlignment.MiddleCenter,
-                    Dock = DockStyle.Top,
-                    Font = new Font("Segoe UI", 10, FontStyle.Bold),
-                    Height = 40
-                };
-
-                var productImage = new PictureBox
-                {
-                    Dock = DockStyle.Top,
-                    Height = 80,
-                    BorderStyle = BorderStyle.FixedSingle,
-                    SizeMode = PictureBoxSizeMode.StretchImage
-                };
-
-                Debug.WriteLine(productImages[product.Key]);
-                //string imagePath = Path.Combine("../../../Images", product.Key.ToLower().Replace(" ", "_") + ".jpg"); //For Dict Only Load
-                string imagePath = Path.Combine("../../../Images", productImages[product.Key]); //For Postgres DB Load
-
-
-                if (File.Exists(imagePath))
-                {
-                    productImage.Image = Image.FromFile(imagePath);
-                }
-                else
-                {
-                    imagePath = Path.Combine("../../../Images", product.Key.ToLower().Replace(" ", "_") + ".jpg"); //For Dict Only Load
-                    if (File.Exists(imagePath))
-                    {
-                        productImage.Image = Image.FromFile(imagePath);
-                    }
-                    else
-                    {
-                        productImage.BackColor = Color.LightGray;
-                        productImage.Image = null;
-                    }
-                }
-
-                var productPrice = new Label
-                {
-                    Text = $"Rs. {product.Value}",
-                    TextAlign = ContentAlignment.MiddleCenter,
-                    Dock = DockStyle.Top,
-                    Font = new Font("Arial", 18, FontStyle.Bold),
-                    Padding = new Padding(0, 5, 0, 0),
-                    Height = 30
-                };
-
-                var addButton = new Button
-                {
-                    Text = "Add to Cart",
-                    Height = 30,
-                    Dock = DockStyle.Bottom,
-                    Tag = product.Key
-                };
-
-                addButton.Click += (sender, e) =>
-                {
-                    string productName = ((Button)sender).Tag.ToString();
-
-                    if (cartQuantities.ContainsKey(productName))
-                    {
-                        cartQuantities[productName]++;
-                    }
-                    else
-                    {
-                        cartQuantities[productName] = 1;
-                    }
-
-                    UpdateCartDisplay();
-                };
-
-                productPanel.Controls.Add(addButton);
-                productPanel.Controls.Add(productPrice);
-                productPanel.Controls.Add(productImage);
-                productPanel.Controls.Add(productLabel);
-
-                flowPanelItems.Controls.Add(productPanel);
+                AddProductToPanel(product.Key, product.Value);
             }
         }
 
@@ -286,18 +192,14 @@ namespace POS
 
             receipt.AppendLine($"\nTotal: Rs. {total}");
 
-            MessageBox.Show(receipt.ToString(), "Checkout Summary");
+            SaveOrderToDatabase(cartQuantities, total); // Save order to database
 
+            MessageBox.Show(receipt.ToString(), "Checkout Summary");
+            
             // Clear the cart
             cartQuantities.Clear();
             UpdateCartDisplay();
         }
-
-        private void Form1_Load(object sender, EventArgs e)
-        {
-            //LoadProductsFromDB();
-        }
-
 
 
         private void clear_Click(object sender, EventArgs e)
@@ -370,6 +272,8 @@ namespace POS
 
         private void AddProductToPanel(string name, decimal price)
         {
+
+            flowPanelItems.SuspendLayout(); // Start layout suspension
             var productPanel = new Panel
             {
                 Size = new Size(150, 200),
@@ -396,7 +300,10 @@ namespace POS
 
             string imagePath = Path.Combine("../../../Images", productImages.ContainsKey(name) ? productImages[name] : name.ToLower().Replace(" ", "_") + ".jpg");
             if (File.Exists(imagePath))
-                productImage.Image = Image.FromFile(imagePath);
+                using (var fs = new FileStream(imagePath, FileMode.Open, FileAccess.Read))
+                {
+                    productImage.Image = Image.FromStream(fs);
+                }
             else
                 productImage.BackColor = Color.LightGray;
 
@@ -434,9 +341,89 @@ namespace POS
             productPanel.Controls.Add(productLabel);
 
             flowPanelItems.Controls.Add(productPanel);
+            flowPanelItems.ResumeLayout(); // Resume layout
         }
-    
+
+        private void numMinPrice_ValueChanged(object sender, EventArgs e)
+        {
+            ApplyFilters();
+        }
+
+        private void numMaxPrice_ValueChanged(object sender, EventArgs e)
+        {
+            ApplyFilters();
+        }
+
+        private void cmbCategory_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            ApplyFilters();
+        }
+
+        private void cmbSubcategory_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            ApplyFilters();
+        }
+
+        private void cmbSort_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            ApplyFilters();
+        }
+
+        private void txtSearch_TextChanged(object sender, EventArgs e)
+        {
+            ApplyFilters();
+        }
+
+
+        private void SaveOrderToDatabase(Dictionary<string, int> cartItems, decimal total)
+        {
+            string connString = "Host=localhost;Username=admin;Password=tooshort;Database=POS-Sys_Def";
+
+            using (var conn = new NpgsqlConnection(connString))
+            {
+                conn.Open();
+                using (var transaction = conn.BeginTransaction())
+                {
+                    try
+                    {
+                        // Insert order
+                        int orderId;
+                        using (var cmd = new NpgsqlCommand("INSERT INTO orders (total_amount) VALUES (@total) RETURNING id", conn))
+                        {
+                            cmd.Parameters.AddWithValue("@total", total);
+                            orderId = (int)cmd.ExecuteScalar();
+                        }
+
+                        // Insert order items
+                        foreach (var item in cartItems)
+                        {
+                            string name = item.Key;
+                            int qty = item.Value;
+                            decimal price = products[name];
+
+                            using (var cmd = new NpgsqlCommand("INSERT INTO order_items (order_id, item_name, quantity, unit_price) VALUES (@order_id, @name, @qty, @price)", conn))
+                            {
+                                cmd.Parameters.AddWithValue("@order_id", orderId);
+                                cmd.Parameters.AddWithValue("@name", name);
+                                cmd.Parameters.AddWithValue("@qty", qty);
+                                cmd.Parameters.AddWithValue("@price", price);
+                                cmd.ExecuteNonQuery();
+                            }
+                        }
+
+                        transaction.Commit();
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine("Order save failed: " + ex.Message);
+                        transaction.Rollback();
+                        MessageBox.Show("Failed to save the order. Please try again.");
+                    }
+                }
+            }
+        }
 
 
     }
+
 }
