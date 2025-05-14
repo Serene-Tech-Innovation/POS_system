@@ -1,0 +1,23 @@
+﻿<Window x:Class="POS.ViewOrder"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:POS"
+        mc:Ignorable="d"
+        Title="ViewOrder" Height="450" Width="800" Closed="Window_Closed">
+    <DockPanel LastChildFill="True">
+        <Menu DockPanel.Dock="Top">
+            <MenuItem Header="Order">
+                <MenuItem Header="New Order" Click="NewOrder_Click"/>
+                <MenuItem Header="View Order" Click="ViewOrder_Click"/>
+            </MenuItem>
+            <MenuItem Header="_products">
+                <MenuItem Header="Add _products"/>
+                <MenuItem Header="Remove _products"/>
+            </MenuItem>
+            <MenuItem Header="Logout" Click="Logout_Click"/>
+        </Menu>
+
+    </DockPanel>
+</Window>

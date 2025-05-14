@@ -1,0 +1,617 @@
+﻿using System;
+using Npgsql;
+using System.Diagnostics;
+using System.Text;
+using System.Windows;
+using System.Windows.Controls;
+using System.Configuration;
+using static System.Net.Mime.MediaTypeNames;
+using System.Xml.Linq;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.IO;
+using System.ComponentModel;
+
+
+namespace POS
+{
+    /// <summary>
+    /// Interaction logic for NewOrder.xaml
+    /// </summary>
+    public partial class NewOrder : Window
+    {
+        private bool _isInitialized = false;
+
+        private bool _windowChange = false; // Flag to track if the back button was clicked
+        private string _userSession = String.Empty;
+        private readonly Dictionary<string, decimal> _products = new();
+        private readonly Dictionary<string, string> _productImages = new();
+        private readonly Dictionary<string, List<string>> _categoryToSubcategories = new();
+        private readonly Dictionary<string, List<string>> _subcategoryToItems = new();
+        private readonly Dictionary<string, int> _cartQuantities = new();
+
+        public class CartItem : INotifyPropertyChanged
+        {
+            public required string Name { get; set; }
+
+            private double _price;
+            public double Price
+            {
+                get => _price;
+                set
+                {
+                    _price = value;
+                    OnPropertyChanged(nameof(Price));
+                    OnPropertyChanged(nameof(TotalPrice));
+                }
+            }
+
+            private int _quantity;
+            public int Quantity
+            {
+                get => _quantity;
+                set
+                {
+                    _quantity = value;
+                    OnPropertyChanged(nameof(Quantity));
+                    OnPropertyChanged(nameof(TotalPrice));
+                }
+            }
+
+            public double TotalPrice => Price * Quantity;
+
+            public event PropertyChangedEventHandler? PropertyChanged;
+            protected void OnPropertyChanged(string propertyName)
+                => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+
+        private void NavigateToViewOrder()
+        {
+            if (_userSession == null)
+            {
+                MessageBox.Show("User session is missing. Please log in again.", "Error");
+                NavigateBackToLogin();
+                return;
+            }
+
+            var viewOrderForm = new ViewOrder(_userSession);
+            viewOrderForm.Show();
+            _windowChange = true; // Set the flag to true
+            this.Close();
+        }
+
+        private void NavigateBackToLogin()
+        {
+            var loginForm = new Login();
+            loginForm.Show();
+            _windowChange = true; // Set the flag to true
+            this.Close();
+        }
+
+        private void LoadProductsFromDB()
+        {
+            string connString = ConfigurationManager.ConnectionStrings["PostgresConnection"].ConnectionString;
+            using var conn = new NpgsqlConnection(connString);
+            conn.Open();
+
+            LoadItems(conn);
+            LoadCategorySubcategoryMapping(conn);
+            LoadSubcategoryItemMapping(conn);
+        }
+
+        private void LoadItems(NpgsqlConnection conn)
+        {
+            try
+            {
+                using var cmd = new NpgsqlCommand("SELECT name, price, image_path FROM item", conn);
+                using var reader = cmd.ExecuteReader();
+                while (reader.Read())
+                {
+                    string name = reader.GetString(0);
+                    decimal price = reader.GetDecimal(1);
+                    string imagePath = reader.IsDBNull(2) ? "" : reader.GetString(2);
+                    _products[name] = price;
+                    _productImages[name] = imagePath;
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("Error loading _products: " + ex.Message);
+                _products["Pizza"] = 400;
+                _products["Momo"] = 150;
+                _products["Fried Rice"] = 180;
+            }
+        }
+
+        private void LoadCategorySubcategoryMapping(NpgsqlConnection conn)
+        {
+            using var cmd = new NpgsqlCommand("SELECT c.name AS category_name, s.name AS subcategory_name FROM subcategory s JOIN category c ON s.category_id = c.id", conn);
+            using var reader = cmd.ExecuteReader();
+            while (reader.Read())
+            {
+                string category = reader.GetString(0);
+                string subcategory = reader.GetString(1);
+                if (!_categoryToSubcategories.ContainsKey(category))
+                    _categoryToSubcategories[category] = new List<string>();
+                _categoryToSubcategories[category].Add(subcategory);
+            }
+        }
+
+        private void LoadSubcategoryItemMapping(NpgsqlConnection conn)
+        {
+            using var cmd = new NpgsqlCommand("SELECT s.name AS subcategory_name, i.name AS item_name FROM item i JOIN subcategory s ON i.subcategory_id = s.id", conn);
+            using var reader = cmd.ExecuteReader();
+            while (reader.Read())
+            {
+                string subcategory = reader.GetString(0);
+                string item = reader.GetString(1);
+                if (!_subcategoryToItems.ContainsKey(subcategory))
+                    _subcategoryToItems[subcategory] = new List<string>();
+                _subcategoryToItems[subcategory].Add(item);
+            }
+        }
+
+        private void PopulateCategories()
+        {
+            cmbCategory.Items.Clear();
+            var categories = new List<string> { "All" };
+            categories.AddRange(_categoryToSubcategories.Keys);
+            cmbCategory.ItemsSource = categories;
+            cmbCategory.SelectedIndex = 0;
+        }
+
+        private void UpdateCartDisplay()
+        {
+            var cartItems = _cartQuantities.Select(item => new CartItem
+            {
+                Name = item.Key,
+                Price = (double)_products[item.Key],
+                Quantity = item.Value
+            }).ToList();
+
+            cartListView.ItemsSource = null;
+            cartListView.ItemsSource = cartItems;
+            UpdateTotal();
+        }
+
+        private void UpdateTotal()
+        {
+            decimal total = _cartQuantities.Sum(item => _products[item.Key] * item.Value);
+            lblTotal.Content = $"Total: Rs. {total}";
+        }
+
+        private void AddProductToWrapPanel(WrapPanel panel, string name, decimal price)
+        {
+            string imagePath = GetImagePath(name);
+
+            var productImage = new System.Windows.Controls.Image
+            {
+                Width = 80,
+                Height = 80,
+                Margin = new Thickness(5),
+                Stretch = Stretch.UniformToFill,
+                Source = LoadImage(imagePath)
+            };
+
+            var button = new Button
+            {
+                Content = $"{name}\nRs. {price}",
+                Width = 100,
+                Height = 50,
+                Tag = name,
+                HorizontalAlignment = HorizontalAlignment.Center,
+                Margin = new Thickness(5)
+            };
+            button.Click += AddToCart_Click;
+
+            var productPanel = new StackPanel
+            {
+                Orientation = Orientation.Vertical,
+                HorizontalAlignment = HorizontalAlignment.Center,
+                Margin = new Thickness(5)
+            };
+            productPanel.Children.Add(productImage);
+            productPanel.Children.Add(button);
+
+            panel.Children.Add(productPanel);
+        }
+
+        private string GetImagePath(string name)
+        {
+            string basePath = "D:\\development\\POS_Proj\\POS_WPF\\POS\\Images"; //Where image is stored.
+            string fileName = _productImages.ContainsKey(name) ? _productImages[name] : name.ToLower().Replace(" ", "_") + ".jpg";
+            string imagePath = Path.Combine(basePath, fileName);
+            return File.Exists(imagePath) ? imagePath : Path.Combine(basePath, "placeholder.jpg");
+        }
+
+        private BitmapImage LoadImage(string path)
+        {
+            try
+            {
+                return new BitmapImage(new Uri(path, UriKind.Absolute));
+            }
+            catch
+            {
+                return new BitmapImage(new Uri("Images/placeholder.jpg", UriKind.Relative));
+            }
+        }
+
+        private void DisplayProducts()
+        {
+            flowPanelItems.Children.Clear();
+
+            foreach (var category in _categoryToSubcategories.Keys)
+            {
+                // Create vertical StackPanel for this category's subcategories
+                var categoryStackPanel = new StackPanel
+                {
+                    Orientation = Orientation.Vertical,
+                    Margin = new Thickness(5)
+                };
+
+                // Add each subcategory as an Expander inside the category's StackPanel
+                foreach (var subcategory in _categoryToSubcategories[category])
+                {
+                    if (!_subcategoryToItems.ContainsKey(subcategory))
+                        continue;
+
+                    var subcategoryExpander = new Expander
+                    {
+                        Header = new TextBlock
+                        {
+                            Text = subcategory,
+                            FontWeight = FontWeights.SemiBold,
+                            FontSize = 16,
+                            Foreground = Brushes.DarkSlateGray
+                        },
+                        Margin = new Thickness(10, 5, 10, 5),
+                        IsExpanded = true
+                    };
+
+                    var itemsPanel = new WrapPanel
+                    {
+                        Margin = new Thickness(20, 5, 10, 10),
+                        HorizontalAlignment = HorizontalAlignment.Left
+                    };
+
+                    foreach (var item in _subcategoryToItems[subcategory])
+                    {
+                        if (_products.ContainsKey(item))
+                        {
+                            AddProductToWrapPanel(itemsPanel, item, _products[item]);
+                        }
+                    }
+
+                    subcategoryExpander.Content = itemsPanel;
+                    categoryStackPanel.Children.Add(subcategoryExpander);
+                }
+
+                // Now add category Expander, containing the subcategory stack
+                var categoryExpander = new Expander
+                {
+                    Header = new TextBlock
+                    {
+                        Text = category,
+                        FontWeight = FontWeights.Bold,
+                        FontSize = 18,
+                        Foreground = Brushes.DarkSlateBlue
+                    },
+                    Margin = new Thickness(10, 15, 10, 5),
+                    IsExpanded = true,
+                    Content = categoryStackPanel
+                };
+
+                // Add the full category row to the main vertical panel
+                flowPanelItems.Children.Add(categoryExpander);
+            }
+        }
+
+        private void ApplyFilters()
+        {
+            flowPanelItems.Children.Clear();
+
+            try
+            {
+                string searchText = txtSearch.Text?.ToLower() ?? string.Empty;
+                string selectedCategory = cmbCategory.SelectedItem as string ?? "All";
+                string selectedSubcategory = cmbSubcategory.SelectedItem as string ?? "All";
+
+                decimal.TryParse(numMinPrice.Text, out decimal minPrice);
+                decimal.TryParse(numMaxPrice.Text, out decimal maxPrice);
+
+                string sortOption = cmbSort.SelectedItem as string ?? "Default";
+
+                // Filter products based on all criteria
+                var filteredProducts = _products
+                    .Where(p =>
+                        (string.IsNullOrWhiteSpace(searchText) || p.Key.ToLower().Contains(searchText)) &&
+                        (selectedCategory == "All" ||
+                            (_categoryToSubcategories.TryGetValue(selectedCategory, out var subcats) &&
+                             subcats.Any(sc => _subcategoryToItems.ContainsKey(sc) && _subcategoryToItems[sc].Contains(p.Key)))) &&
+                        (selectedSubcategory == "All" ||
+                            (_subcategoryToItems.ContainsKey(selectedSubcategory) && _subcategoryToItems[selectedSubcategory].Contains(p.Key))) &&
+                        p.Value >= minPrice && p.Value <= maxPrice
+                    );
+
+                // Apply sorting
+                filteredProducts = sortOption switch
+                {
+                    "Price Low to High" => filteredProducts.OrderBy(p => p.Value),
+                    "Price High to Low" => filteredProducts.OrderByDescending(p => p.Value),
+                    "A-Z" => filteredProducts.OrderBy(p => p.Key),
+                    "Z-A" => filteredProducts.OrderByDescending(p => p.Key),
+                    _ => filteredProducts
+                };
+
+                // Group by category and subcategory
+                var categoryGroups = _categoryToSubcategories
+                    .Where(cat => selectedCategory == "All" || cat.Key == selectedCategory)
+                    .ToDictionary(cat => cat.Key, cat => cat.Value);
+
+                foreach (var category in categoryGroups)
+                {
+                    var categoryStackPanel = new StackPanel
+                    {
+                        Orientation = Orientation.Vertical,
+                        Margin = new Thickness(5)
+                    };
+
+                    bool categoryHasItems = false;
+
+                    foreach (var subcategory in category.Value)
+                    {
+                        if (selectedSubcategory != "All" && subcategory != selectedSubcategory)
+                            continue;
+
+                        var subItems = filteredProducts
+                            .Where(p => _subcategoryToItems.ContainsKey(subcategory) &&
+                                        _subcategoryToItems[subcategory].Contains(p.Key))
+                            .ToList();
+
+                        if (!subItems.Any())
+                            continue;
+
+                        var subcategoryExpander = new Expander
+                        {
+                            Header = new TextBlock
+                            {
+                                Text = subcategory,
+                                FontWeight = FontWeights.SemiBold,
+                                FontSize = 16,
+                                Foreground = Brushes.DarkSlateGray
+                            },
+                            Margin = new Thickness(10, 5, 10, 5),
+                            IsExpanded = true
+                        };
+
+                        var itemsPanel = new WrapPanel
+                        {
+                            Margin = new Thickness(20, 5, 10, 10),
+                            HorizontalAlignment = HorizontalAlignment.Left
+                        };
+
+                        foreach (var product in subItems)
+                        {
+                            AddProductToWrapPanel(itemsPanel, product.Key, product.Value);
+                        }
+
+                        subcategoryExpander.Content = itemsPanel;
+                        categoryStackPanel.Children.Add(subcategoryExpander);
+                        categoryHasItems = true;
+                    }
+
+                    if (categoryHasItems)
+                    {
+                        var categoryExpander = new Expander
+                        {
+                            Header = new TextBlock
+                            {
+                                Text = category.Key,
+                                FontWeight = FontWeights.Bold,
+                                FontSize = 18,
+                                Foreground = Brushes.DarkSlateBlue
+                            },
+                            Margin = new Thickness(10, 15, 10, 5),
+                            IsExpanded = true,
+                            Content = categoryStackPanel
+                        };
+
+                        flowPanelItems.Children.Add(categoryExpander);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("Filter error: " + ex);
+            }
+        }
+
+        public NewOrder(string role)
+        {
+            InitializeComponent();
+            LoadProductsFromDB();
+            PopulateCategories();
+            DisplayProducts();
+            _userSession = role;
+            Loaded += (s, e) => _isInitialized = true;
+        }
+
+        private void btnCheckout_Click(object sender, RoutedEventArgs e)
+        {
+            if (_cartQuantities.Count == 0)
+            {
+                MessageBox.Show("Your cart is empty.");
+                return;
+            }
+
+            StringBuilder receipt = new StringBuilder("Items in Cart:\n\n");
+            decimal total = 0;
+
+            foreach (var item in _cartQuantities)
+            {
+                string name = item.Key;
+                int qty = item.Value;
+                decimal price = _products[name];
+                decimal subtotal = price * qty;
+                total += subtotal;
+
+                receipt.AppendLine($"{name} x{qty} - Rs. {subtotal}");
+            }
+
+            receipt.AppendLine($"\nTotal: Rs. {total}");
+
+            // You can save to DB here
+            MessageBox.Show(receipt.ToString(), "Checkout Summary");
+
+            _cartQuantities.Clear();
+            UpdateCartDisplay();
+        }
+        private void NewOrder_Click(object sender, RoutedEventArgs e)
+        {
+            
+        }
+        private void ViewOrder_Click(object sender, RoutedEventArgs e)
+        {
+            NavigateToViewOrder();
+        }
+
+        private void clear_Click(object sender, RoutedEventArgs e)
+        {
+            _cartQuantities.Clear();
+            UpdateCartDisplay();
+        }
+
+        private void btnRemoveItem_Click(object sender, RoutedEventArgs e)
+        {
+            //if (cartListBox.SelectedItem is string selectedItem)
+            //{
+            //    string[] parts = selectedItem.Split('\t');
+            //    if (parts.Length > 0)
+            //    {
+            //        string productName = parts[0];
+
+            //        if (_cartQuantities.ContainsKey(productName))
+            //        {
+            //            _cartQuantities[productName]--;
+            //            if (_cartQuantities[productName] <= 0)
+            //                _cartQuantities.Remove(productName);
+            //        }
+
+            //        UpdateCartDisplay();
+            //    }
+            //}
+        }
+
+        private void txtSearch_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            ApplyFilters();
+        }
+
+        private void cmbCategory_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            cmbCategoryTextBlock.Visibility = Visibility.Hidden;
+
+            cmbSubcategory.ItemsSource = null;
+            cmbSubcategory.Items.Clear();
+            var subCategories = new List<string> { "All" };
+            if (cmbCategory.SelectedItem is string selectedCategory)
+            {
+                if(selectedCategory == "All")
+                {
+                    subCategories.AddRange(_subcategoryToItems.Keys);
+                }
+                else if (_categoryToSubcategories.ContainsKey(selectedCategory)) {
+                    // Show only subcategories under the selected category
+                    subCategories.AddRange(_categoryToSubcategories[selectedCategory]);
+                }
+                cmbSubcategory.ItemsSource = subCategories;
+                cmbSubcategory.SelectedIndex = 0;
+            }
+            if (_isInitialized)
+                ApplyFilters();
+        }
+
+        private void cmbSubcategory_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            cmbSubcategoryTextBlock.Visibility = Visibility.Hidden;
+            if (_isInitialized)
+                ApplyFilters();
+        }
+
+        private void cmbSort_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            //cmbSortTextBlock.Visibility = Visibility.Hidden;
+            if (_isInitialized)
+                ApplyFilters();
+        }
+
+        private void AddToCart_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is Button btn && btn.Tag is string productName)
+            {
+                if (!_products.ContainsKey(productName))
+                {
+                    MessageBox.Show("Product not found.");
+                    return;
+                }
+
+                // Increase quantity or add new
+                if (_cartQuantities.ContainsKey(productName))
+                    _cartQuantities[productName]++;
+                else
+                    _cartQuantities[productName] = 1;
+
+                UpdateCartDisplay();
+            }
+        }
+
+        private void Window_Closed(object sender, EventArgs e)
+        {
+            if(!_windowChange)
+                App.Current.Shutdown();
+        }
+
+        private void numMaxPrice_ValueChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
+        {
+            if (_isInitialized)
+                ApplyFilters();
+        }
+
+        private void numMinPrice_ValueChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
+        {
+            if (_isInitialized)
+                ApplyFilters();
+        }
+
+
+        private void RemoveButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is Button button && button.DataContext is CartItem item)
+            {
+                _cartQuantities.Remove(item.Name);
+                UpdateCartDisplay();
+            }
+        }
+
+        private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (sender is ComboBox comboBox && comboBox.DataContext is CartItem item)
+            {
+                int newQuantity = (int)comboBox.SelectedItem;
+
+                // Avoid infinite recursion by only updating when there's a change
+                if (_cartQuantities[item.Name] != newQuantity)
+                {
+                    _cartQuantities[item.Name] = newQuantity;
+                    UpdateCartDisplay();
+                }
+            }
+        }
+
+        private void Logout_Click(object sender, RoutedEventArgs e)
+        {
+            NavigateBackToLogin();
+        }
+    }
+}
