@@ -174,8 +174,16 @@ namespace POS
             StringBuilder receipt = new StringBuilder();
             decimal total = 0;
 
-            receipt.AppendLine("Items in Cart:\n");
+           
+            receipt.AppendLine("        PANDEY KHAJA GHAR");
+            receipt.AppendLine("        Durbar Marg, Kathmandu");
+            receipt.AppendLine("        Tel: 01-12345678");
+            receipt.AppendLine("****************************************************");
+            receipt.AppendLine("                RECEIPT");
+            receipt.AppendLine("****************************************************");
+            receipt.AppendLine(string.Format("{0,-20}{1,5}{2,10}", "Item", "Qty", "Price"));
 
+           
             foreach (var item in cartQuantities)
             {
                 string productName = item.Key;
@@ -186,20 +194,30 @@ namespace POS
                     decimal price = products[productName];
                     decimal subtotal = price * quantity;
                     total += subtotal;
-                    receipt.AppendLine($"{productName} x{quantity} - Rs. {subtotal}");
+
+                    receipt.AppendLine(string.Format("{0,-20}{1,5}{2,10}", productName, quantity, $"Rs.{subtotal}"));
                 }
             }
 
-            receipt.AppendLine($"\nTotal: Rs. {total}");
+           
+            receipt.AppendLine("****************************************************");
+            receipt.AppendLine(string.Format("{0,-25}{1,10}", "TOTAL:", $"Rs.{total}"));
+            receipt.AppendLine(string.Format("{0,-25}{1,10}", "Discount:", "Rs.0.00"));
+            receipt.AppendLine("****************************************************");
+            receipt.AppendLine("         THANK YOU FOR VISITING!");
+            receipt.AppendLine();
+            receipt.AppendLine("        ||||||||||||||||||||| ||||||||||||||||||||"); 
+            
 
-            SaveOrderToDatabase(cartQuantities, total); // Save order to database
-
+            // Save to DB and show
+            SaveOrderToDatabase(cartQuantities, total);
             MessageBox.Show(receipt.ToString(), "Checkout Summary");
 
-            // Clear the cart
+           
             cartQuantities.Clear();
             UpdateCartDisplay();
         }
+
 
 
         private void clear_Click(object sender, EventArgs e)
