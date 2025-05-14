@@ -319,37 +319,61 @@ namespace POS
 
                 decimal.TryParse(numMinPrice.Text, out decimal minPrice);
                 decimal.TryParse(numMaxPrice.Text, out decimal maxPrice);
+                
+                string tempSortOption = cmbSort.SelectedValue.ToString() ?? "Default";
+                if(tempSortOption!= "Default")
+                {
+                    tempSortOption = tempSortOption.Split(":")[1].Trim();
+                }
+                string sortOption = tempSortOption;
 
-                string sortOption = cmbSort.SelectedItem as string ?? "Default";
-
-                // Filter products based on all criteria
-                var filteredProducts = _products
+                // Filter products first
+                var filtered = _products
                     .Where(p =>
                         (string.IsNullOrWhiteSpace(searchText) || p.Key.ToLower().Contains(searchText)) &&
-                        (selectedCategory == "All" ||
-                            (_categoryToSubcategories.TryGetValue(selectedCategory, out var subcats) &&
-                             subcats.Any(sc => _subcategoryToItems.ContainsKey(sc) && _subcategoryToItems[sc].Contains(p.Key)))) &&
-                        (selectedSubcategory == "All" ||
-                            (_subcategoryToItems.ContainsKey(selectedSubcategory) && _subcategoryToItems[selectedSubcategory].Contains(p.Key))) &&
                         p.Value >= minPrice && p.Value <= maxPrice
-                    );
+                    )
+                    .ToList();
 
-                // Apply sorting
-                filteredProducts = sortOption switch
+                // Group by Category → Subcategory → Products
+                var grouped = new Dictionary<string, Dictionary<string, List<KeyValuePair<string, decimal>>>>();
+
+                foreach (var product in filtered)
                 {
-                    "Price Low to High" => filteredProducts.OrderBy(p => p.Value),
-                    "Price High to Low" => filteredProducts.OrderByDescending(p => p.Value),
-                    "A-Z" => filteredProducts.OrderBy(p => p.Key),
-                    "Z-A" => filteredProducts.OrderByDescending(p => p.Key),
-                    _ => filteredProducts
-                };
+                    foreach (var subcatEntry in _subcategoryToItems)
+                    {
+                        if (!subcatEntry.Value.Contains(product.Key))
+                            continue;
 
-                // Group by category and subcategory
-                var categoryGroups = _categoryToSubcategories
-                    .Where(cat => selectedCategory == "All" || cat.Key == selectedCategory)
-                    .ToDictionary(cat => cat.Key, cat => cat.Value);
+                        string subcategory = subcatEntry.Key;
 
-                foreach (var category in categoryGroups)
+                        // Skip if subcategory doesn't match filter
+                        if (selectedSubcategory != "All" && selectedSubcategory != subcategory)
+                            continue;
+
+                        // Find category that owns this subcategory
+                        var category = _categoryToSubcategories
+                            .FirstOrDefault(c => c.Value.Contains(subcategory));
+
+                        if (category.Key == null)
+                            continue;
+
+                        // Skip if category doesn't match filter
+                        if (selectedCategory != "All" && selectedCategory != category.Key)
+                            continue;
+
+                        if (!grouped.ContainsKey(category.Key))
+                            grouped[category.Key] = new Dictionary<string, List<KeyValuePair<string, decimal>>>();
+
+                        if (!grouped[category.Key].ContainsKey(subcategory))
+                            grouped[category.Key][subcategory] = new List<KeyValuePair<string, decimal>>();
+
+                        grouped[category.Key][subcategory].Add(product);
+                    }
+                }
+
+                // Sort and render
+                foreach (var categoryPair in grouped)
                 {
                     var categoryStackPanel = new StackPanel
                     {
@@ -357,32 +381,18 @@ namespace POS
                         Margin = new Thickness(5)
                     };
 
-                    bool categoryHasItems = false;
-
-                    foreach (var subcategory in category.Value)
+                    foreach (var subcategoryPair in categoryPair.Value)
                     {
-                        if (selectedSubcategory != "All" && subcategory != selectedSubcategory)
-                            continue;
-
-                        var subItems = filteredProducts
-                            .Where(p => _subcategoryToItems.ContainsKey(subcategory) &&
-                                        _subcategoryToItems[subcategory].Contains(p.Key))
-                            .ToList();
-
-                        if (!subItems.Any())
-                            continue;
-
-                        var subcategoryExpander = new Expander
+                        // Fix for CS8506: No best type was found for the switch expression.
+                        // The issue occurs because the switch expression needs a consistent type for all cases.
+                        // Ensure that all cases in the switch expression return the same type.
+                        var sortedProducts = sortOption switch
                         {
-                            Header = new TextBlock
-                            {
-                                Text = subcategory,
-                                FontWeight = FontWeights.SemiBold,
-                                FontSize = 16,
-                                Foreground = Brushes.DarkSlateGray
-                            },
-                            Margin = new Thickness(10, 5, 10, 5),
-                            IsExpanded = true
+                            "Price Low to High" => subcategoryPair.Value.OrderBy(p => p.Value).ToList(),
+                            "Price High to Low" => subcategoryPair.Value.OrderByDescending(p => p.Value).ToList(),
+                            "A-Z" => subcategoryPair.Value.OrderBy(p => p.Key).ToList(),
+                            "Z-A" => subcategoryPair.Value.OrderByDescending(p => p.Key).ToList(),
+                            _ => subcategoryPair.Value.ToList()
                         };
 
                         var itemsPanel = new WrapPanel
@@ -391,34 +401,43 @@ namespace POS
                             HorizontalAlignment = HorizontalAlignment.Left
                         };
 
-                        foreach (var product in subItems)
+                        foreach (var product in sortedProducts)
                         {
                             AddProductToWrapPanel(itemsPanel, product.Key, product.Value);
                         }
 
-                        subcategoryExpander.Content = itemsPanel;
-                        categoryStackPanel.Children.Add(subcategoryExpander);
-                        categoryHasItems = true;
-                    }
-
-                    if (categoryHasItems)
-                    {
-                        var categoryExpander = new Expander
+                        var subcategoryExpander = new Expander
                         {
                             Header = new TextBlock
                             {
-                                Text = category.Key,
-                                FontWeight = FontWeights.Bold,
-                                FontSize = 18,
-                                Foreground = Brushes.DarkSlateBlue
+                                Text = subcategoryPair.Key,
+                                FontWeight = FontWeights.SemiBold,
+                                FontSize = 16,
+                                Foreground = Brushes.DarkSlateGray
                             },
-                            Margin = new Thickness(10, 15, 10, 5),
+                            Margin = new Thickness(10, 5, 10, 5),
                             IsExpanded = true,
-                            Content = categoryStackPanel
+                            Content = itemsPanel
                         };
 
-                        flowPanelItems.Children.Add(categoryExpander);
+                        categoryStackPanel.Children.Add(subcategoryExpander);
                     }
+
+                    var categoryExpander = new Expander
+                    {
+                        Header = new TextBlock
+                        {
+                            Text = categoryPair.Key,
+                            FontWeight = FontWeights.Bold,
+                            FontSize = 18,
+                            Foreground = Brushes.DarkSlateBlue
+                        },
+                        Margin = new Thickness(10, 15, 10, 5),
+                        IsExpanded = true,
+                        Content = categoryStackPanel
+                    };
+
+                    flowPanelItems.Children.Add(categoryExpander);
                 }
             }
             catch (Exception ex)
@@ -447,6 +466,13 @@ namespace POS
 
             StringBuilder receipt = new StringBuilder("Items in Cart:\n\n");
             decimal total = 0;
+            receipt.AppendLine("        PANDEY KHAJA GHAR");
+            receipt.AppendLine("        Durbar Marg, Kathmandu");
+            receipt.AppendLine("        Tel: 01-12345678");
+            receipt.AppendLine("****************************************************");
+            receipt.AppendLine("                RECEIPT");
+            receipt.AppendLine("****************************************************");
+            receipt.AppendLine(string.Format("{0,-20}{1,5}{2,10}", "Item", "Qty", "Price"));
 
             foreach (var item in _cartQuantities)
             {
@@ -456,10 +482,17 @@ namespace POS
                 decimal subtotal = price * qty;
                 total += subtotal;
 
-                receipt.AppendLine($"{name} x{qty} - Rs. {subtotal}");
+                receipt.AppendLine(string.Format("{0,-20}{1,5}{2,10}", name, qty, $"Rs.{subtotal}"));
+                //receipt.AppendLine($"{name} x{qty} - Rs. {subtotal}");
             }
 
-            receipt.AppendLine($"\nTotal: Rs. {total}");
+            receipt.AppendLine("****************************************************");
+            receipt.AppendLine(string.Format("{0,-25}{1,10}", "TOTAL:", $"Rs.{total}"));
+            receipt.AppendLine(string.Format("{0,-25}{1,10}", "Discount:", "Rs.0.00"));
+            receipt.AppendLine("****************************************************");
+            receipt.AppendLine("         THANK YOU FOR VISITING!");
+            receipt.AppendLine();
+            receipt.AppendLine("|||||||||||||||||||||||||||||||||||||||||||||||||||||");
 
             // You can save to DB here
             MessageBox.Show(receipt.ToString(), "Checkout Summary");
@@ -541,7 +574,13 @@ namespace POS
 
         private void cmbSort_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            //cmbSortTextBlock.Visibility = Visibility.Hidden;
+            // Fix for CS0021: Cannot apply indexing with [] to an expression of type 'ComboBox'
+            if (cmbSort.SelectedItem is ComboBoxItem selectedItem)
+            {
+                string sortOption = selectedItem.Content.ToString() ?? "Default";
+                Debug.WriteLine(sortOption);
+            }
+
             if (_isInitialized)
                 ApplyFilters();
         }
@@ -612,6 +651,36 @@ namespace POS
         private void Logout_Click(object sender, RoutedEventArgs e)
         {
             NavigateBackToLogin();
+        }
+
+        private void MaxPriceDown_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void MaxPriceUp_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void MinPriceUp_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void MinPriceDown_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void numMinPrice_TextChanged(object sender, TextChangedEventArgs e)
+        {
+
+        }
+
+        private void numMaxPrice_TextChanged(object sender, TextChangedEventArgs e)
+        {
+
         }
     }
 }
