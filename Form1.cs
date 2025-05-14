@@ -195,7 +195,7 @@ namespace POS
             SaveOrderToDatabase(cartQuantities, total); // Save order to database
 
             MessageBox.Show(receipt.ToString(), "Checkout Summary");
-            
+
             // Clear the cart
             cartQuantities.Clear();
             UpdateCartDisplay();
@@ -331,7 +331,7 @@ namespace POS
                 Console.WriteLine(productName);
                 if (cartQuantities.ContainsKey(productName))
                 {
-                    
+
                     cartQuantities[productName]++;
                 }
 
@@ -429,7 +429,10 @@ namespace POS
             }
         }
 
+        private void btnFilter_Click(object sender, EventArgs e)
+        {
 
+        }
     }
 
 }
