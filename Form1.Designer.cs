@@ -149,7 +149,7 @@
             cmbSort.Name = "cmbSort";
             cmbSort.Size = new Size(138, 28);
             cmbSort.TabIndex = 22;
-            cmbSort.Text = "Price Range";
+            cmbSort.Text = "Filter";
             cmbSort.SelectedIndexChanged += cmbSort_SelectedIndexChanged;
             // 
             // cmbCategory
@@ -204,7 +204,7 @@
             btnFilter.Name = "btnFilter";
             btnFilter.Size = new Size(86, 32);
             btnFilter.TabIndex = 27;
-            btnFilter.Text = "Filter";
+            btnFilter.Text = "Apply";
             btnFilter.UseVisualStyleBackColor = false;
             btnFilter.Click += btnFilter_Click;
             // 
