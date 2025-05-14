@@ -9,6 +9,152 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Assets\Images\Beef Burger.jpg" />
+    <None Remove="Assets\Images\Bread_Pudding.jpg" />
+    <None Remove="Assets\Images\Butter_Chicken.jpg" />
+    <None Remove="Assets\Images\C.momo.jpg" />
+    <None Remove="Assets\Images\Chicken_Chilly.jpg" />
+    <None Remove="Assets\Images\Chicken_wrap.jpg" />
+    <None Remove="Assets\Images\Chocolate_Cake.jpg" />
+    <None Remove="Assets\Images\Coke.jpg" />
+    <None Remove="Assets\Images\cold_coffee.jpg" />
+    <None Remove="Assets\Images\Cosmopolitan.jpg" />
+    <None Remove="Assets\Images\Croissant.jpg" />
+    <None Remove="Assets\Images\espresso.jpg" />
+    <None Remove="Assets\Images\fried_chicken.jpg" />
+    <None Remove="Assets\Images\Fried_Rice.jpg" />
+    <None Remove="Assets\Images\fries.jpg" />
+    <None Remove="Assets\Images\Garlic_Bread.jpg" />
+    <None Remove="Assets\Images\Grilled_Chicken.jpg" />
+    <None Remove="Assets\Images\Ice_Cream.jpg" />
+    <None Remove="Assets\Images\Mac_and_Cheese.jpg" />
+    <None Remove="Assets\Images\Mayo_Dip.jpg" />
+    <None Remove="Assets\Images\Mixed_pickles.jpg" />
+    <None Remove="Assets\Images\Mojito.jpg" />
+    <None Remove="Assets\Images\Momo.jpg" />
+    <None Remove="Assets\Images\Monsoon_Combo.jpg" />
+    <None Remove="Assets\Images\Orange_juice.jpg" />
+    <None Remove="Assets\Images\Pasta.jpg" />
+    <None Remove="Assets\Images\Pizza.jpg" />
+    <None Remove="Assets\Images\salad.jpg" />
+    <None Remove="Assets\Images\Spaghetti.jpg" />
+    <None Remove="Assets\Images\Tandoori_platter.jpg" />
+    <None Remove="Assets\Images\Tomato_Soup.jpg" />
+    <None Remove="Assets\Images\Veg_Burger.jpg" />
+    <None Remove="Assets\Images\Veg_Spring_Roll.jpg" />
+    <None Remove="Assets\Images\Veg_Spring_Roll.webp" />
+    <None Remove="Assets\Images\Virgin_Pina.jpg" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Assets\Images\Beef Burger.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Images\Bread_Pudding.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Images\Butter_Chicken.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Images\C.momo.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Images\Chicken_Chilly.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Images\Chicken_wrap.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Images\Chocolate_Cake.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Images\Coke.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Images\cold_coffee.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Images\Cosmopolitan.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Images\Croissant.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Images\espresso.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Images\fried_chicken.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Images\Fried_Rice.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Images\fries.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Images\Garlic_Bread.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Images\Grilled_Chicken.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Images\Ice_Cream.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Images\Mac_and_Cheese.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Images\Mayo_Dip.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Images\Mixed_pickles.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Images\Mojito.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Images\Momo.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Images\Monsoon_Combo.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Images\Orange_juice.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Images\Pasta.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Images\Pizza.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Images\salad.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Images\Spaghetti.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Images\Tandoori_platter.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Images\Tomato_Soup.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Images\Veg_Burger.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Images\Veg_Spring_Roll.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Images\Veg_Spring_Roll.webp">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Images\Virgin_Pina.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Extended.Wpf.Toolkit" Version="4.7.25104.5739" />
     <PackageReference Include="Npgsql" Version="9.0.3" />
   </ItemGroup>

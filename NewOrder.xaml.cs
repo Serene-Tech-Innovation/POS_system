@@ -219,7 +219,8 @@ namespace POS
 
         private string GetImagePath(string name)
         {
-            string basePath = "D:\\development\\POS_Proj\\POS_WPF\\POS\\Images"; //Where image is stored.
+            string baseDir = AppDomain.CurrentDomain.BaseDirectory;
+            string basePath = System.IO.Path.Combine(baseDir, "Assets/Images"); //Where image is stored.
             string fileName = _productImages.ContainsKey(name) ? _productImages[name] : name.ToLower().Replace(" ", "_") + ".jpg";
             string imagePath = Path.Combine(basePath, fileName);
             return File.Exists(imagePath) ? imagePath : Path.Combine(basePath, "placeholder.jpg");
@@ -500,10 +501,12 @@ namespace POS
             _cartQuantities.Clear();
             UpdateCartDisplay();
         }
+        
         private void NewOrder_Click(object sender, RoutedEventArgs e)
         {
-            
+            //This is new order (Disabled button)
         }
+        
         private void ViewOrder_Click(object sender, RoutedEventArgs e)
         {
             NavigateToViewOrder();
@@ -515,27 +518,6 @@ namespace POS
             UpdateCartDisplay();
         }
 
-        private void btnRemoveItem_Click(object sender, RoutedEventArgs e)
-        {
-            //if (cartListBox.SelectedItem is string selectedItem)
-            //{
-            //    string[] parts = selectedItem.Split('\t');
-            //    if (parts.Length > 0)
-            //    {
-            //        string productName = parts[0];
-
-            //        if (_cartQuantities.ContainsKey(productName))
-            //        {
-            //            _cartQuantities[productName]--;
-            //            if (_cartQuantities[productName] <= 0)
-            //                _cartQuantities.Remove(productName);
-            //        }
-
-            //        UpdateCartDisplay();
-            //    }
-            //}
-        }
-
         private void txtSearch_TextChanged(object sender, TextChangedEventArgs e)
         {
             ApplyFilters();
@@ -543,8 +525,6 @@ namespace POS
 
         private void cmbCategory_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            cmbCategoryTextBlock.Visibility = Visibility.Hidden;
-
             cmbSubcategory.ItemsSource = null;
             cmbSubcategory.Items.Clear();
             var subCategories = new List<string> { "All" };
@@ -567,7 +547,6 @@ namespace POS
 
         private void cmbSubcategory_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            cmbSubcategoryTextBlock.Visibility = Visibility.Hidden;
             if (_isInitialized)
                 ApplyFilters();
         }
@@ -605,25 +584,6 @@ namespace POS
             }
         }
 
-        private void Window_Closed(object sender, EventArgs e)
-        {
-            if(!_windowChange)
-                App.Current.Shutdown();
-        }
-
-        private void numMaxPrice_ValueChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
-        {
-            if (_isInitialized)
-                ApplyFilters();
-        }
-
-        private void numMinPrice_ValueChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
-        {
-            if (_isInitialized)
-                ApplyFilters();
-        }
-
-
         private void RemoveButton_Click(object sender, RoutedEventArgs e)
         {
             if (sender is Button button && button.DataContext is CartItem item)
@@ -653,34 +613,62 @@ namespace POS
             NavigateBackToLogin();
         }
 
-        private void MaxPriceDown_Click(object sender, RoutedEventArgs e)
-        {
-
-        }
-
         private void MaxPriceUp_Click(object sender, RoutedEventArgs e)
         {
 
+            numMaxPrice.Text = (Convert.ToDecimal(numMaxPrice.Text) + 1).ToString();
+            //if (_isInitialized)
+            //    ApplyFilters();
+        }
+        
+        private void MaxPriceDown_Click(object sender, RoutedEventArgs e)
+        {
+            numMaxPrice.Text = (Convert.ToDecimal(numMaxPrice.Text) - 1).ToString();
+            //if (_isInitialized)
+            //    ApplyFilters();
         }
 
         private void MinPriceUp_Click(object sender, RoutedEventArgs e)
         {
-
+            numMinPrice.Text = (Convert.ToDecimal(numMinPrice.Text) + 1).ToString();
+            //if (_isInitialized)
+            //    ApplyFilters();
         }
 
         private void MinPriceDown_Click(object sender, RoutedEventArgs e)
         {
-
+            numMinPrice.Text = (Convert.ToDecimal(numMinPrice.Text) - 1).ToString();
+            //if (_isInitialized)
+            //    ApplyFilters();
         }
 
         private void numMinPrice_TextChanged(object sender, TextChangedEventArgs e)
         {
-
+            if (_isInitialized)
+                ApplyFilters();
         }
 
         private void numMaxPrice_TextChanged(object sender, TextChangedEventArgs e)
         {
-
+            if (_isInitialized)
+                ApplyFilters();
         }
+
+        private void btnReset_Click(object sender, RoutedEventArgs e)
+        {
+            numMaxPrice.Text = "10000";
+            numMinPrice.Text = "0";
+            cmbCategory.SelectedIndex = 0;
+            cmbSubcategory.SelectedIndex = 0;
+            cmbSort.SelectedIndex = 0;
+        }
+
+        private void Window_Closed(object sender, EventArgs e)
+        {
+            if (!_windowChange)
+                App.Current.Shutdown();
+        }
+
+        
     }
 }
