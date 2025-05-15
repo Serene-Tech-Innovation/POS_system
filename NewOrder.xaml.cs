@@ -465,39 +465,11 @@ namespace POS
                 return;
             }
 
-            StringBuilder receipt = new StringBuilder("Items in Cart:\n\n");
-            decimal total = 0;
-            receipt.AppendLine("        PANDEY KHAJA GHAR");
-            receipt.AppendLine("        Durbar Marg, Kathmandu");
-            receipt.AppendLine("        Tel: 01-12345678");
-            receipt.AppendLine("****************************************************");
-            receipt.AppendLine("                RECEIPT");
-            receipt.AppendLine("****************************************************");
-            receipt.AppendLine(string.Format("{0,-20}{1,5}{2,10}", "Item", "Qty", "Price"));
+            // Show the receipt window
+            Recipt receiptWindow = new Recipt(_cartQuantities, _products);
+            receiptWindow.Show();
 
-            foreach (var item in _cartQuantities)
-            {
-                string name = item.Key;
-                int qty = item.Value;
-                decimal price = _products[name];
-                decimal subtotal = price * qty;
-                total += subtotal;
-
-                receipt.AppendLine(string.Format("{0,-20}{1,5}{2,10}", name, qty, $"Rs.{subtotal}"));
-                //receipt.AppendLine($"{name} x{qty} - Rs. {subtotal}");
-            }
-
-            receipt.AppendLine("****************************************************");
-            receipt.AppendLine(string.Format("{0,-25}{1,10}", "TOTAL:", $"Rs.{total}"));
-            receipt.AppendLine(string.Format("{0,-25}{1,10}", "Discount:", "Rs.0.00"));
-            receipt.AppendLine("****************************************************");
-            receipt.AppendLine("         THANK YOU FOR VISITING!");
-            receipt.AppendLine();
-            receipt.AppendLine("|||||||||||||||||||||||||||||||||||||||||||||||||||||");
-
-            // You can save to DB here
-            MessageBox.Show(receipt.ToString(), "Checkout Summary");
-
+            // Optionally reset the cart
             _cartQuantities.Clear();
             UpdateCartDisplay();
         }
@@ -669,6 +641,9 @@ namespace POS
                 App.Current.Shutdown();
         }
 
-        
+        private void cartListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+
+        }
     }
 }

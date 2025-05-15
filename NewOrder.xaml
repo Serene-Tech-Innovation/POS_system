@@ -81,7 +81,7 @@
             <!-- Cart Section -->
             <StackPanel Grid.Row="0" Grid.RowSpan="2" Grid.Column="1">
                 <TextBox Text="Cart Items" FontSize="18" TextAlignment="Center" Margin="0,0,0,10" IsReadOnly="True"/>
-                <ListView x:Name="cartListView" Height="600" Margin="0,0,0,10" av:ItemsSource="{av:SampleData ItemCount=5}">
+                <ListView x:Name="cartListView" Height="600" Margin="0,0,0,10" av:ItemsSource="{av:SampleData ItemCount=5}" SelectionChanged="cartListView_SelectionChanged">
                     <ListView.View>
                         <GridView>
                             <GridViewColumn Header="Name" Width="90" DisplayMemberBinding="{Binding Name}" />

@@ -14,14 +14,56 @@ using System.Windows.Shapes;
 
 namespace POS
 {
-    /// <summary>
-    /// Interaction logic for Recipt.xaml
-    /// </summary>
     public partial class Recipt : Window
     {
+       
         public Recipt()
         {
             InitializeComponent();
+        }
+
+        public Recipt(Dictionary<string, int> cartQuantities, Dictionary<string, decimal> products)
+        {
+            InitializeComponent();
+            LoadReceipt(cartQuantities, products);
+        }
+
+        private void LoadReceipt(Dictionary<string, int> cart, Dictionary<string, decimal> products)
+        {
+            decimal total = 0;
+            var receiptItems = new List<ReceiptItem>();
+
+            foreach (var item in cart)
+            {
+                string name = item.Key;
+                int qty = item.Value;
+                decimal price = products[name];
+                decimal subtotal = price * qty;
+                total += subtotal;
+
+                receiptItems.Add(new ReceiptItem
+                {
+                    Name = $"{name} x{qty}",
+                    Price = $"Rs. {subtotal:F2}"
+                });
+            }
+
+            itemsControl.ItemsSource = receiptItems;
+
+            totalTextBlock.Text = $"Rs. {total:F2}";
+            Discountamt.Text = "Rs. 0.00"; 
+        }
+
+        
+        public class ReceiptItem
+        {
+            public string Name { get; set; }
+            public string Price { get; set; }
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            this.Close(); 
         }
     }
 }
