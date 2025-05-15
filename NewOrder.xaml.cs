@@ -466,12 +466,25 @@ namespace POS
             }
 
             // Show the receipt window
-            Recipt receiptWindow = new Recipt(_cartQuantities, _products);
+            Receipt receiptWindow = new Receipt(_cartQuantities, _products);
             receiptWindow.Show();
+            receiptWindow.printButton.Click += (s, args) =>
+            {
+                // Optionally handle any actions after the print button is clicked
+                // For example, you can navigate back to the main order window
+                // Optionally reset the cart
+                _cartQuantities.Clear();
+                UpdateCartDisplay();
+            };
 
-            // Optionally reset the cart
-            _cartQuantities.Clear();
-            UpdateCartDisplay();
+            receiptWindow.Closed += (s, args) =>
+            {
+                // Optionally handle any actions after the receipt window is closed
+                // For example, you can navigate back to the main order window
+                this.Show();
+                return;
+            };
+            
         }
         
         private void NewOrder_Click(object sender, RoutedEventArgs e)
