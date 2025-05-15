@@ -15,8 +15,7 @@
                     <GridViewColumn Header="Qty" Width="65">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
-                                <ComboBox Width="50" SelectedValue="{Binding Quantity, Mode=TwoWay}" 
-                                          SelectionChanged="Quantity_SelectionChanged">
+                                <ComboBox x:Name="quantityDropDown" Width="50" Tag="{Binding}" SelectedValue="{Binding Quantity, Mode=TwoWay}" TargetUpdated="quantityDropDown_TargetUpdated" >
                                     <ComboBox.ItemsSource>
                                         <x:Array Type="{x:Type sys:Int32}" 
                                                  xmlns:sys="clr-namespace:System;assembly=mscorlib">
@@ -32,7 +31,7 @@
                     <GridViewColumn Header="Action" Width="55">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
-                                <Button Content="❌" Background="Red" Click="RemoveButton_Click"/>
+                                <Button Content="❌" Background="Red" x:Name="btnRemove" Tag="{Binding}" Click="btnRemove_Click"/>
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
@@ -44,9 +43,8 @@
 
         <StackPanel Orientation="Horizontal">
             <Button x:Name="btnCheckout" Content="Checkout" Background="LawnGreen" 
-                    Width="100" Click="btnCheckout_Click" Margin="0,0,10,0"/>
-            <Button x:Name="btnClear" Content="Clear" Background="Red" Width="100" 
-                    Click="btnClear_Click"/>
+                    Width="100" Margin="0,0,10,0"/>
+            <Button x:Name="btnClear" Content="Clear" Background="Red" Width="100"/>
         </StackPanel>
     </StackPanel>
 </UserControl>

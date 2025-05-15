@@ -16,31 +16,16 @@ using System.Windows.Shapes;
 namespace POS
 {
     /// <summary>
-    /// Interaction logic for ShoppingCartControl.xaml
+    /// Interaction logic for PaymentProcessingControl.xaml
     /// </summary>
-    public partial class ShoppingCartControl : UserControl
+    public partial class PaymentProcessingControl : UserControl
     {
-        public ShoppingCartControl()
+        public PaymentProcessingControl()
         {
             InitializeComponent();
         }
 
-        private void btnClear_Click(object sender, RoutedEventArgs e)
-        {
-
-        }
-
-        private void btnCheckout_Click(object sender, RoutedEventArgs e)
-        {
-
-        }
-
-        private void RemoveButton_Click(object sender, RoutedEventArgs e)
-        {
-
-        }
-
-        private void Quantity_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void ProcessPayment_Click(object sender, RoutedEventArgs e)
         {
 
         }
