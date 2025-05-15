@@ -1,0 +1,9 @@
+﻿<Page x:Class="POS.ShiftManagementPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      Title="Shift Management">
+    <Grid Margin="10">
+        <TextBlock Text="Shift Management" FontSize="24" FontWeight="Bold"/>
+        <!-- Shift schedule, assign staff -->
+    </Grid>
+</Page>

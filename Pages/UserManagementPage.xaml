@@ -1,0 +1,9 @@
+﻿<Page x:Class="POS.UserManagementPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      Title="User Management">
+    <Grid Margin="10">
+        <TextBlock Text="User Management" FontSize="24" FontWeight="Bold"/>
+        <!-- List users, add/edit roles -->
+    </Grid>
+</Page>

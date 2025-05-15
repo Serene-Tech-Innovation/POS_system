@@ -1,0 +1,15 @@
+﻿<Page x:Class="POS.DashboardPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      Title="Dashboard">
+    <UniformGrid Columns="2" Rows="2" Margin="20">
+        <Button Content="New Order" 
+                Click="NewOrder_Click"/>
+        <Button Content="Inventory" 
+                Click="Inventory_Click"/>
+        <Button Content="Customers" 
+                Click="Customers_Click"/>
+        <Button Content="Reports"
+                Click="Reports_Click"/>
+    </UniformGrid>
+</Page>
