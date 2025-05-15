@@ -1,0 +1,49 @@
+﻿<UserControl x:Class="POS.ProductFilterControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:l="clr-namespace:POS">
+
+    <StackPanel Orientation="Horizontal" Margin="0,0,10,10">
+        <TextBox x:Name="txtSearch" Width="100" Margin="0,0,10,0" 
+                 TextChanged="txtSearch_TextChanged" 
+                 l:TextBoxHelper.Placeholder="Search" VerticalAlignment="Center"/>
+
+        <!-- Price Filter Section -->
+        <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5">
+            <TextBlock Text="Min Price:" VerticalAlignment="Center" Margin="0,0,5,0"/>
+            <StackPanel Orientation="Horizontal">
+                <RepeatButton Content="▲" Width="20" Click="MinPriceUp_Click"/>
+                <TextBox x:Name="numMinPrice" Width="60" Text="0" TextAlignment="Center" 
+                         Margin="2,0" TextChanged="numMinPrice_TextChanged"/>
+                <RepeatButton Content="▼" Width="20" Click="MinPriceDown_Click"/>
+            </StackPanel>
+        </StackPanel>
+
+        <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5">
+            <TextBlock Text="Max Price:" VerticalAlignment="Center" Margin="0,0,5,0"/>
+            <StackPanel Orientation="Horizontal">
+                <RepeatButton Content="▲" Width="20" Click="MaxPriceUp_Click"/>
+                <TextBox x:Name="numMaxPrice" Width="60" Text="10000" TextAlignment="Center" 
+                         Margin="2,0" TextChanged="numMaxPrice_TextChanged"/>
+                <RepeatButton Content="▼" Width="20" Click="MaxPriceDown_Click"/>
+            </StackPanel>
+        </StackPanel>
+
+        <ComboBox x:Name="cmbCategory" Width="120" Margin="0,0,10,0" 
+                  SelectionChanged="cmbCategory_SelectionChanged"/>
+
+        <ComboBox x:Name="cmbSubcategory" Width="120" Margin="0,0,10,0" 
+                  SelectionChanged="cmbSubcategory_SelectionChanged"/>
+
+        <ComboBox x:Name="cmbSort" Width="120" SelectionChanged="cmbSort_SelectionChanged" 
+                  SelectedIndex="0">
+            <ComboBoxItem Content="Default"/>
+            <ComboBoxItem Content="Price Low to High"/>
+            <ComboBoxItem Content="Price High to Low"/>
+            <ComboBoxItem Content="A-Z"/>
+            <ComboBoxItem Content="Z-A"/>
+        </ComboBox>
+
+        <Button x:Name="btnReset" Content="Reset" Width="70" Click="btnReset_Click"/>
+    </StackPanel>
+</UserControl>

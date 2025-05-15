@@ -1,34 +1,60 @@
-﻿using Npgsql;
-using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+using Npgsql;  // Required for PostgreSQL interaction
+using System.Configuration;
 
-namespace POS
+namespace temp.POS
 {
-    /// <summary>
-    /// Interaction logic for Login.xaml
-    /// </summary>
-    public partial class Login : Page
+    public partial class Login : Window
     {
-        public Login()
+        public Login(String t)
         {
             InitializeComponent();
         }
 
+        // Event handler for login button click
+        private void LoginButton_Click(object sender, RoutedEventArgs e)
+        {
+            //Developement Case
+            var cashier = new NewOrder("cashier");
+            cashier.Show();
+            this.Hide(); // Hide the current form
+            return; // For development purposes, show the cashier form directly
+            //Basic Login Successful
+            // Get user input
+            string username = usernameTextBox.Text;
+            string password = passwordBox.Password;
+
+            // Validate credentials with database
+            if (ValidateCredentials(username, password))
+            {
+                // Retrieve the role of the user
+                string role = GetUserRole(username);
+                
+                // Open corresponding form based on role
+                if (role == "user")
+                {
+                    var userForm = new escalatePerms(); // For regular user, show user dashboard form
+                    userForm.Show();
+                }
+                else
+                {
+                    // Handle other roles if needed
+                    MessageBox.Show($"Welcome, {role}!", "Role-based Access", MessageBoxButton.OK, MessageBoxImage.Information);
+                    var newOrderForm = new NewOrder(role); // For admin, show new order form
+                    newOrderForm.Show();
+                }
+
+                this.Close(); // Close the Login form after transition
+            }
+            else
+            {
+                MessageBox.Show("Invalid credentials", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
         // Method to validate login credentials with the database
-        public bool ValidateCredentials(string username, string password)
+        private bool ValidateCredentials(string username, string password)
         {
             bool isValid = false;
             string connectionString = ConfigurationManager.ConnectionStrings["PostgresConnection"].ConnectionString;
@@ -66,7 +92,7 @@ namespace POS
         }
 
         // Updated code to fix CS8602 and CS8600 errors
-        public string GetUserRole(string username)
+        private string GetUserRole(string username)
         {
             string role = string.Empty;
             string connectionString = ConfigurationManager.ConnectionStrings["PostgresConnection"].ConnectionString;

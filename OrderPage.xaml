@@ -1,0 +1,33 @@
+﻿<Page x:Class="POS.OrderPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:local="clr-namespace:POS"
+      Title="Order Management">
+
+    <DockPanel LastChildFill="True">
+        <!-- Menu moved to MainWindow -->
+
+        <!-- Main Content -->
+        <Grid Margin="10">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="350"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <!-- For Filter -->
+                <RowDefinition Height="*"/>
+                <!-- For Product list -->
+            </Grid.RowDefinitions>
+            <!-- Left Panel -->
+            
+            <StackPanel Grid.Column="0">
+                <local:ProductFilterControl x:Name="ProductFilter" Grid.Row="1"/>
+                <local:ProductDisplayControl x:Name="ProductDisplay" Grid.Row="2"/>
+            </StackPanel>
+            
+            <!-- Right Panel (Cart) -->
+            <local:ShoppingCartControl x:Name="ShoppingCart" Grid.Column="1"/>
+        </Grid>
+    </DockPanel>
+</Page>

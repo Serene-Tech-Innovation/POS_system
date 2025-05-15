@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -10,18 +11,27 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
 using System.Windows.Shapes;
 
 namespace POS
 {
     /// <summary>
-    /// Interaction logic for escalatePerms.xaml
+    /// Interaction logic for DashboardPage.xaml
     /// </summary>
-    public partial class escalatePerms : Window
+    public partial class DashboardPage : Page
     {
-        public escalatePerms()
+        public DashboardPage()
         {
             InitializeComponent();
+        }
+
+        public DashboardPage(string role)
+        {
+            InitializeComponent();
+            // Set the role in the dashboard
+            Debug.WriteLine($"Role: {role}");
+            //RoleTextBlock.Text = $"Role: {role}";
         }
     }
 }

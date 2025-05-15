@@ -1,25 +1,34 @@
-﻿using System;
-using Npgsql;
+﻿using Npgsql;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Configuration;
 using System.Diagnostics;
+using System.IO;
+using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Configuration;
-using static System.Net.Mime.MediaTypeNames;
-using System.Xml.Linq;
+using System.Windows.Data;
+using System.Windows.Documents;
+using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.IO;
-using System.ComponentModel;
-
+using System.Windows.Navigation;
+using System.Windows.Shapes;
+using System.Xml.Linq;
+using Xceed.Wpf.Toolkit.PropertyGrid.Attributes;
+using Path = System.IO.Path;
 
 namespace POS
 {
     /// <summary>
-    /// Interaction logic for NewOrder.xaml
+    /// Interaction logic for OrderPage.xaml
     /// </summary>
-    public partial class NewOrder : Window
+    public partial class OrderPage : Page
     {
+        // Fields for the OrderPage class
         private bool _isInitialized = false;
 
         private bool _windowChange = false; // Flag to track if the back button was clicked
@@ -63,30 +72,6 @@ namespace POS
             public event PropertyChangedEventHandler? PropertyChanged;
             protected void OnPropertyChanged(string propertyName)
                 => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
-
-
-        private void NavigateToViewOrder()
-        {
-            if (_userSession == null)
-            {
-                MessageBox.Show("User session is missing. Please log in again.", "Error");
-                NavigateBackToLogin();
-                return;
-            }
-
-            var viewOrderForm = new ViewOrder(_userSession);
-            viewOrderForm.Show();
-            _windowChange = true; // Set the flag to true
-            this.Close();
-        }
-
-        private void NavigateBackToLogin()
-        {
-            var loginForm = new Login();
-            loginForm.Show();
-            _windowChange = true; // Set the flag to true
-            this.Close();
         }
 
         private void LoadProductsFromDB()
@@ -154,11 +139,11 @@ namespace POS
 
         private void PopulateCategories()
         {
-            cmbCategory.Items.Clear();
+            ProductFilter.cmbCategory.Items.Clear();
             var categories = new List<string> { "All" };
             categories.AddRange(_categoryToSubcategories.Keys);
-            cmbCategory.ItemsSource = categories;
-            cmbCategory.SelectedIndex = 0;
+            ProductFilter.cmbCategory.ItemsSource = categories;
+            ProductFilter.cmbCategory.SelectedIndex = 0;
         }
 
         private void UpdateCartDisplay()
@@ -170,15 +155,26 @@ namespace POS
                 Quantity = item.Value
             }).ToList();
 
-            cartListView.ItemsSource = null;
-            cartListView.ItemsSource = cartItems;
+            ShoppingCart.cartListView.ItemsSource = null;
+            ShoppingCart.cartListView.ItemsSource = cartItems;
+
+            foreach (var items in ShoppingCart.cartListView.Items)
+            {
+                Debug.WriteLine(items);
+            }
+
+            foreach (var items in cartItems)
+            {
+                Debug.WriteLine(items);
+            }
+
             UpdateTotal();
         }
 
         private void UpdateTotal()
         {
             decimal total = _cartQuantities.Sum(item => _products[item.Key] * item.Value);
-            lblTotal.Content = $"Total: Rs. {total}";
+            ShoppingCart.lblTotal.Content = $"Total: Rs. {total}";
         }
 
         private void AddProductToWrapPanel(WrapPanel panel, string name, decimal price)
@@ -240,7 +236,7 @@ namespace POS
 
         private void DisplayProducts()
         {
-            flowPanelItems.Children.Clear();
+            ProductDisplay.flowPanelItems.Children.Clear();
 
             foreach (var category in _categoryToSubcategories.Keys)
             {
@@ -304,25 +300,25 @@ namespace POS
                 };
 
                 // Add the full category row to the main vertical panel
-                flowPanelItems.Children.Add(categoryExpander);
+                ProductDisplay.flowPanelItems.Children.Add(categoryExpander);
             }
         }
 
         private void ApplyFilters()
         {
-            flowPanelItems.Children.Clear();
+            ProductDisplay.flowPanelItems.Children.Clear();
 
             try
             {
-                string searchText = txtSearch.Text?.ToLower() ?? string.Empty;
-                string selectedCategory = cmbCategory.SelectedItem as string ?? "All";
-                string selectedSubcategory = cmbSubcategory.SelectedItem as string ?? "All";
+                string searchText = ProductFilter.txtSearch.Text?.ToLower() ?? string.Empty;
+                string selectedCategory = ProductFilter.cmbCategory.SelectedItem as string ?? "All";
+                string selectedSubcategory = ProductFilter.cmbSubcategory.SelectedItem as string ?? "All";
 
-                decimal.TryParse(numMinPrice.Text, out decimal minPrice);
-                decimal.TryParse(numMaxPrice.Text, out decimal maxPrice);
-                
-                string tempSortOption = cmbSort.SelectedValue.ToString() ?? "Default";
-                if(tempSortOption!= "Default")
+                decimal.TryParse(ProductFilter.numMinPrice.Text, out decimal minPrice);
+                decimal.TryParse(ProductFilter.numMaxPrice.Text, out decimal maxPrice);
+
+                string tempSortOption = ProductFilter.cmbSort.SelectedValue.ToString() ?? "Default";
+                if (tempSortOption != "Default")
                 {
                     tempSortOption = tempSortOption.Split(":")[1].Trim();
                 }
@@ -438,7 +434,7 @@ namespace POS
                         Content = categoryStackPanel
                     };
 
-                    flowPanelItems.Children.Add(categoryExpander);
+                    ProductDisplay.flowPanelItems.Children.Add(categoryExpander);
                 }
             }
             catch (Exception ex)
@@ -447,7 +443,13 @@ namespace POS
             }
         }
 
-        public NewOrder(string role)
+        public OrderPage()
+        {
+            InitializeComponent();
+            
+        }
+
+        public OrderPage(String role)
         {
             InitializeComponent();
             LoadProductsFromDB();
@@ -455,8 +457,10 @@ namespace POS
             DisplayProducts();
             _userSession = role;
             Loaded += (s, e) => _isInitialized = true;
+            ShoppingCart.btnCheckout.Click += btnCheckout_Click;
+            ShoppingCart.btnClear.Click += clear_Click;
         }
-
+        
         private void btnCheckout_Click(object sender, RoutedEventArgs e)
         {
             if (_cartQuantities.Count == 0)
@@ -466,35 +470,35 @@ namespace POS
             }
 
             // Show the receipt window
-            Receipt receiptWindow = new Receipt(_cartQuantities, _products);
+            ReceiptPrintWindow receiptWindow = new ReceiptPrintWindow(_cartQuantities, _products);
             receiptWindow.Show();
-            receiptWindow.printButton.Click += (s, args) =>
-            {
-                // Optionally handle any actions after the print button is clicked
-                // For example, you can navigate back to the main order window
-                // Optionally reset the cart
-                _cartQuantities.Clear();
-                UpdateCartDisplay();
-            };
+            //receiptWindow.printButton.Click += (s, args) =>
+            //{
+            //    // Optionally handle any actions after the print button is clicked
+            //    // For example, you can navigate back to the main order window
+            //    // Optionally reset the cart
+            //    _cartQuantities.Clear();
+            //    UpdateCartDisplay();
+            //};
 
-            receiptWindow.Closed += (s, args) =>
-            {
-                // Optionally handle any actions after the receipt window is closed
-                // For example, you can navigate back to the main order window
-                this.Show();
-                return;
-            };
-            
+            //receiptWindow.Closed += (s, args) =>
+            //{
+            //    // Optionally handle any actions after the receipt window is closed
+            //    // For example, you can navigate back to the main order window
+            //    this.Show();
+            //    return;
+            //};
+
         }
-        
+
         private void NewOrder_Click(object sender, RoutedEventArgs e)
         {
             //This is new order (Disabled button)
         }
-        
+
         private void ViewOrder_Click(object sender, RoutedEventArgs e)
         {
-            NavigateToViewOrder();
+            //NavigateToViewOrder();
         }
 
         private void clear_Click(object sender, RoutedEventArgs e)
@@ -510,21 +514,22 @@ namespace POS
 
         private void cmbCategory_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            cmbSubcategory.ItemsSource = null;
-            cmbSubcategory.Items.Clear();
+            ProductFilter.cmbSubcategory.ItemsSource = null;
+            ProductFilter.cmbSubcategory.Items.Clear();
             var subCategories = new List<string> { "All" };
-            if (cmbCategory.SelectedItem is string selectedCategory)
+            if (ProductFilter.cmbCategory.SelectedItem is string selectedCategory)
             {
-                if(selectedCategory == "All")
+                if (selectedCategory == "All")
                 {
                     subCategories.AddRange(_subcategoryToItems.Keys);
                 }
-                else if (_categoryToSubcategories.ContainsKey(selectedCategory)) {
+                else if (_categoryToSubcategories.ContainsKey(selectedCategory))
+                {
                     // Show only subcategories under the selected category
                     subCategories.AddRange(_categoryToSubcategories[selectedCategory]);
                 }
-                cmbSubcategory.ItemsSource = subCategories;
-                cmbSubcategory.SelectedIndex = 0;
+                ProductFilter.cmbSubcategory.ItemsSource = subCategories;
+                ProductFilter.cmbSubcategory.SelectedIndex = 0;
             }
             if (_isInitialized)
                 ApplyFilters();
@@ -539,7 +544,7 @@ namespace POS
         private void cmbSort_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             // Fix for CS0021: Cannot apply indexing with [] to an expression of type 'ComboBox'
-            if (cmbSort.SelectedItem is ComboBoxItem selectedItem)
+            if (ProductFilter.cmbSort.SelectedItem is ComboBoxItem selectedItem)
             {
                 string sortOption = selectedItem.Content.ToString() ?? "Default";
                 Debug.WriteLine(sortOption);
@@ -564,7 +569,11 @@ namespace POS
                     _cartQuantities[productName]++;
                 else
                     _cartQuantities[productName] = 1;
-
+                foreach(var cart in _cartQuantities)
+                {
+                    Debug.WriteLine(cart);
+                }
+                
                 UpdateCartDisplay();
             }
         }
@@ -595,34 +604,34 @@ namespace POS
 
         private void Logout_Click(object sender, RoutedEventArgs e)
         {
-            NavigateBackToLogin();
+            //NavigateBackToLogin();
         }
 
         private void MaxPriceUp_Click(object sender, RoutedEventArgs e)
         {
 
-            numMaxPrice.Text = (Convert.ToDecimal(numMaxPrice.Text) + 1).ToString();
+            ProductFilter.numMaxPrice.Text = (Convert.ToDecimal(ProductFilter.numMaxPrice.Text) + 1).ToString();
             //if (_isInitialized)
             //    ApplyFilters();
         }
-        
+
         private void MaxPriceDown_Click(object sender, RoutedEventArgs e)
         {
-            numMaxPrice.Text = (Convert.ToDecimal(numMaxPrice.Text) - 1).ToString();
+            ProductFilter.numMaxPrice.Text = (Convert.ToDecimal(ProductFilter.numMaxPrice.Text) - 1).ToString();
             //if (_isInitialized)
             //    ApplyFilters();
         }
 
         private void MinPriceUp_Click(object sender, RoutedEventArgs e)
         {
-            numMinPrice.Text = (Convert.ToDecimal(numMinPrice.Text) + 1).ToString();
+            ProductFilter.numMinPrice.Text = (Convert.ToDecimal(ProductFilter.numMinPrice.Text) + 1).ToString();
             //if (_isInitialized)
             //    ApplyFilters();
         }
 
         private void MinPriceDown_Click(object sender, RoutedEventArgs e)
         {
-            numMinPrice.Text = (Convert.ToDecimal(numMinPrice.Text) - 1).ToString();
+            ProductFilter.numMinPrice.Text = (Convert.ToDecimal(ProductFilter.numMinPrice.Text) - 1).ToString();
             //if (_isInitialized)
             //    ApplyFilters();
         }
@@ -641,11 +650,11 @@ namespace POS
 
         private void btnReset_Click(object sender, RoutedEventArgs e)
         {
-            numMaxPrice.Text = "10000";
-            numMinPrice.Text = "0";
-            cmbCategory.SelectedIndex = 0;
-            cmbSubcategory.SelectedIndex = 0;
-            cmbSort.SelectedIndex = 0;
+            ProductFilter.numMaxPrice.Text = "10000";
+            ProductFilter.numMinPrice.Text = "0";
+            ProductFilter.cmbCategory.SelectedIndex = 0;
+            ProductFilter.cmbSubcategory.SelectedIndex = 0;
+            ProductFilter.cmbSort.SelectedIndex = 0;
         }
 
         private void Window_Closed(object sender, EventArgs e)

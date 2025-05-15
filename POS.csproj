@@ -9,6 +9,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="temp\**" />
+    <EmbeddedResource Remove="temp\**" />
+    <None Remove="temp\**" />
+    <Page Remove="temp\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Remove="Assets\Images\Beef Burger.jpg" />
     <None Remove="Assets\Images\Bread_Pudding.jpg" />
     <None Remove="Assets\Images\Butter_Chicken.jpg" />
