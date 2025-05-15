@@ -24,10 +24,5 @@ namespace POS
         {
             InitializeComponent();
         }
-
-        private void AddToCart_Click(object sender, RoutedEventArgs e)
-        {
-
-        }
     }
 }
