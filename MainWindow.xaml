@@ -5,22 +5,23 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:POS"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <Grid>
-        <local:Header x:Name="header" HorizontalAlignment="Stretch" VerticalAlignment="Top"/>
-        <!-- Main Content Frame -->
-        <Frame x:Name="MainFrame" NavigationUIVisibility="Hidden" 
-               JournalOwnership="OwnsJournal"/>
+        Title="MainWindow" Height="600" Width="1000" WindowStyle="ThreeDBorderWindow" WindowState="Maximized" SnapsToDevicePixels="True">
 
-        <!-- Status Bar 
-        <StatusBar DockPanel.Dock="Bottom">
-            <StatusBarItem>
-                <TextBlock x:Name="StatusText" Text="Ready"/>
-            </StatusBarItem>
-            <StatusBarItem HorizontalAlignment="Right">
-                <TextBlock x:Name="DateTimeText"/>
-            </StatusBarItem>
-        </StatusBar>
-        -->
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <!-- Header -->
+            <RowDefinition Height="*"/>
+            <!-- Main content -->
+        </Grid.RowDefinitions>
+
+        <!-- Header at the top -->
+        <local:Header x:Name="header" Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Top"/>
+
+        <!-- Main content starts below the header -->
+        <Frame x:Name="MainFrame"
+               Grid.Row="1"
+               NavigationUIVisibility="Hidden"
+               JournalOwnership="OwnsJournal"/>
     </Grid>
 </Window>

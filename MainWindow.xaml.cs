@@ -39,11 +39,11 @@ namespace POS
                     }
                     else if (role == "server")
                     {
-                        MainFrame.Navigate(new OrderPage(role));
+                        MainFrame.Navigate(new OrderPage(this, role));
                     }
                     else if (role == "cashier")
                     {
-                        MainFrame.Navigate(new OrderPage(role));
+                        MainFrame.Navigate(new OrderPage(this, role));
                     }
                     else if (role == "moderator")
                     {
