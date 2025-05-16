@@ -17,7 +17,7 @@
                            Margin="0 0 0 20" HorizontalAlignment="Center"/>
 
                 <TextBox x:Name="UsernameBox" lo:TextBoxHelper.Placeholder="Username" 
-                         Margin="0 0 0 10" Height="40" Text="cashier_test"/>
+                         Margin="0 0 0 10" Height="40" Text="admin_test"/>
 
                 <PasswordBox x:Name="PasswordBox" lo:PasswordBoxHelper.Placeholder="Password" 
                              Margin="0 0 0 20" Height="40" Password="hashed_password"/>
