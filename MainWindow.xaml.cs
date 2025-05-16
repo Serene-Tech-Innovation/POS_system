@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Runtime.CompilerServices;
+using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -62,5 +63,9 @@ namespace POS
             };
         }
 
+        internal static MainWindow GetWindow()
+        {
+            return Application.Current.Windows.OfType<MainWindow>().FirstOrDefault();
+        }
     }
 }
