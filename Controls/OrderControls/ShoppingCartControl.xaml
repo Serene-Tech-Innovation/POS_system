@@ -6,7 +6,7 @@
     <StackPanel>
         <TextBlock Text="Cart Items" FontSize="18" TextAlignment="Center" Margin="0,0,0,10"/>
 
-        <ListView x:Name="cartListView" Height="600" Margin="0,0,0,10">
+        <ListView x:Name="cartListView" ItemsSource="{Binding CartItems}" Height="600" Margin="0,0,0,10">
             <ListView.View>
                 <GridView>
                     <GridViewColumn Header="Name" Width="90" DisplayMemberBinding="{Binding Name}"/>
@@ -15,13 +15,23 @@
                     <GridViewColumn Header="Qty" Width="65">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
-                                <ComboBox x:Name="quantityDropDown" Width="50" Tag="{Binding}" SelectedValue="{Binding Quantity, Mode=TwoWay}" TargetUpdated="quantityDropDown_TargetUpdated" >
+                                <ComboBox x:Name="quantityDropDown"
+                                  Width="50"
+                                  Tag="{Binding}"
+                                  SelectedValue="{Binding Quantity, Mode=TwoWay}"
+                                  SelectionChanged="quantityDropDown_SelectionChanged">
                                     <ComboBox.ItemsSource>
-                                        <x:Array Type="{x:Type sys:Int32}" 
-                                                 xmlns:sys="clr-namespace:System;assembly=mscorlib">
+                                        <x:Array Type="{x:Type sys:Int32}" xmlns:sys="clr-namespace:System;assembly=mscorlib">
                                             <sys:Int32>1</sys:Int32>
                                             <sys:Int32>2</sys:Int32>
-                                            <!-- More quantities... -->
+                                            <sys:Int32>3</sys:Int32>
+                                            <sys:Int32>4</sys:Int32>
+                                            <sys:Int32>5</sys:Int32>
+                                            <sys:Int32>6</sys:Int32>
+                                            <sys:Int32>7</sys:Int32>
+                                            <sys:Int32>8</sys:Int32>
+                                            <sys:Int32>9</sys:Int32>
+                                            <sys:Int32>10</sys:Int32>
                                         </x:Array>
                                     </ComboBox.ItemsSource>
                                 </ComboBox>
