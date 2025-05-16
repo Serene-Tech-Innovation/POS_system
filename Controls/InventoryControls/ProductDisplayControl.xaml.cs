@@ -241,6 +241,12 @@ namespace POS
                     (!filter.MaxPrice.HasValue || p.Price <= (decimal)filter.MaxPrice.Value))
                 .ToList();
 
+            if(filter.TextSearch != null)
+            {
+                filteredProducts = filteredProducts
+                    .Where(p => p.Name.IndexOf(filter.TextSearch, StringComparison.OrdinalIgnoreCase) >= 0)
+                    .ToList();
+            }
             // Apply sorting
             filteredProducts = filter.SortOption switch
             {

@@ -6,7 +6,7 @@
 
     <StackPanel Orientation="Horizontal" Margin="0,0,10,10">
         <TextBox x:Name="txtSearch" Width="100" Margin="0,0,10,0" 
-                 lo:TextBoxHelper.Placeholder="Search" VerticalAlignment="Center"/>
+                 lo:TextBoxHelper.Placeholder="Search" VerticalAlignment="Center" TextChanged="txtSearch_TextChanged"/>
 
         <!-- Price Filter Section -->
         <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5">
@@ -36,6 +36,6 @@
           ItemsSource="{Binding SortOptions}" SelectionChanged="cmbSort_SelectionChanged" />
 
 
-        <Button x:Name="btnReset" Content="Reset" Width="70"/>
+        <Button x:Name="btnReset" Content="Reset" Width="70" Click="btnReset_Click"/>
     </StackPanel>
 </UserControl>

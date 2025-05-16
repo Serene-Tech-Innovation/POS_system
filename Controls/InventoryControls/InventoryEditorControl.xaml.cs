@@ -1,5 +1,7 @@
-﻿using System;
+﻿using POS.Models.Core;
+using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -20,9 +22,55 @@ namespace POS
     /// </summary>
     public partial class InventoryEditorControl : UserControl
     {
+
+        public ObservableCollection<EditableProduct> _editableProducts;
+        public List<Category> CategoryList => ProductDataStore.Categories;
+
+        public void AddEditableProduct(EditableProduct product)
+        {
+            if (!_editableProducts.Any(p => p.Name == product.Name))
+                _editableProducts.Add(product);
+        }
+
         public InventoryEditorControl()
         {
             InitializeComponent();
+
+            // Initialize the editable products collection
+            //DataContext = ProductDataStore.Products;
+            _editableProducts = new ObservableCollection<EditableProduct>();
+            ProductGrid.ItemsSource = _editableProducts;
+
+            //ProductGrid.DataContext = _editableProducts;
+        }
+
+        private void ApplySingle_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is Button btn && btn.DataContext is EditableProduct ep)
+            {
+                ProductDataStore.SetProduct(ep.ToProduct());
+                MessageBox.Show($"Updated: {ep.Name}");
+            }
+        }
+
+        private void ApplyAll_Click(object sender, RoutedEventArgs e)
+        {
+            foreach (var ep in _editableProducts)
+                ProductDataStore.SetProduct(ep.ToProduct());
+
+            MessageBox.Show("All changes applied.");
+        }
+
+        private void Delete_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is Button btn && btn.DataContext is EditableProduct ep)
+            {
+                var original = ProductDataStore.GetProduct(ep.Name);
+                if (original != null)
+                    ProductDataStore.Products.Remove(original);
+
+                _editableProducts.Remove(ep);
+            }
         }
 
         private void Add_Click(object sender, RoutedEventArgs e)
@@ -38,6 +86,36 @@ namespace POS
         private void Remove_Click(object sender, RoutedEventArgs e)
         {
 
+        }
+    }
+
+    public class EditableProduct
+    {
+        public EditableProduct(Product product)
+        {
+            Name = product.Name;
+            Price = product.Price;
+            Stock = product.Stock;
+            Category = product.Category;
+            Subcategory = product.Subcategory;
+        }
+
+        public string Name { get; set; }
+        public decimal Price { get; set; }
+        public int Stock { get; set; } = 0;
+        public Category Category { get; set; }
+        public Subcategory Subcategory { get; set; }
+
+        public Product ToProduct()
+        {
+            return new Product
+            {
+                Name = this.Name,
+                Price = this.Price,
+                Stock = this.Stock,
+                Category = this.Category,
+                Subcategory = this.Subcategory
+            };
         }
     }
 }

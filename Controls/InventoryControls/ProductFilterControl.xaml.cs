@@ -37,6 +37,16 @@ namespace POS
         private ObservableCollection<string> categories = new ObservableCollection<string>();
         private ObservableCollection<string> subCategories = new ObservableCollection<string>();
 
+        private void makeFiltersDefault()
+        {
+            txtSearch.Text = string.Empty;
+            cmbCategory.SelectedIndex = 0;
+            cmbSubcategory.SelectedIndex = 0;
+            numMinPrice.Text = string.Empty;
+            numMaxPrice.Text = string.Empty;
+            cmbSort.SelectedIndex = 0;
+        }
+
         private void PopulateCategories()
         {
             cmbCategory.ItemsSource = null;
@@ -86,6 +96,7 @@ namespace POS
 
             var args = new FilterChangedEventArgs
             {
+                TextSearch = txtSearch.Text,
                 SelectedCategory = cmbCategory.SelectedItem as string ?? "All",
                 SelectedSubcategory = cmbSubcategory.SelectedItem as string ?? "All",
                 MinPrice = double.TryParse(numMinPrice.Text, out var min) ? min : (double?)null,
@@ -112,6 +123,12 @@ namespace POS
         {
             PopulateCategories();
             isLoaded = true;
+        }
+
+        private void txtSearch_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (isLoaded)
+                OnFilterChanged();
         }
 
         private void cmbCategory_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -169,9 +186,18 @@ namespace POS
             if (isLoaded)
                 OnFilterChanged();
         }
+
+        private void btnReset_Click(object sender, RoutedEventArgs e)
+        {
+            makeFiltersDefault();
+            if (isLoaded)
+                OnFilterChanged();
+        }
+
     }
     public class FilterChangedEventArgs : EventArgs
     {
+        public string TextSearch { get; set; } = string.Empty;
         public string SelectedCategory { get; set; }
         public string SelectedSubcategory { get; set; }
         public double? MinPrice { get; set; }
