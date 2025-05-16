@@ -9,6 +9,7 @@ namespace POS.Models.Core
     {
         public string Name { get; set; }
         public decimal Price { get; set; }
+        public int Stock { get; set; }
         public Category Category { get; set; }
         public Subcategory Subcategory { get; set; }
     }
@@ -57,7 +58,6 @@ namespace POS.Models.Core
         // Add or update category
         public static void SetCategory(Category category)
         {
-            Debug.WriteLine($"Setting category: {category.Name}");
             var existing = GetCategory(category.Name);
             if (existing is null)
             {
