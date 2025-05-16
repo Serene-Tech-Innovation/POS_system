@@ -7,38 +7,38 @@ using System.Threading.Tasks;
 
 namespace POS.Models.Core
 {
-    internal class CartItem : INotifyPropertyChanged
+    public class CartItem : INotifyPropertyChanged
     {
-        public required string Name { get; set; }
+        public Product Product { get; }
+        public string Name { get; private set; }
 
         private double _price;
         public double Price
         {
             get => _price;
-            set
-            {
-                _price = value;
-                OnPropertyChanged(nameof(Price));
-                OnPropertyChanged(nameof(TotalPrice));
-            }
+            set { _price = value; OnPropertyChanged(nameof(Price)); OnPropertyChanged(nameof(TotalPrice)); }
         }
 
         private int _quantity;
         public int Quantity
         {
             get => _quantity;
-            set
-            {
-                _quantity = value;
-                OnPropertyChanged(nameof(Quantity));
-                OnPropertyChanged(nameof(TotalPrice));
-            }
+            set { _quantity = value; OnPropertyChanged(nameof(Quantity)); OnPropertyChanged(nameof(TotalPrice)); }
         }
 
         public double TotalPrice => Price * Quantity;
 
+        // Constructor sets Name, Price, Quantity
+        public CartItem(Product product, int quantity)
+        {
+            Product = product;
+            Name = product.Name;
+            Price = (double)product.Price;
+            Quantity = quantity;
+        }
+
         public event PropertyChangedEventHandler? PropertyChanged;
-        protected void OnPropertyChanged(string propertyName)
-            => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        protected void OnPropertyChanged(string name) =>
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
     }
 }

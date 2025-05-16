@@ -6,36 +6,36 @@
 
     <StackPanel Orientation="Horizontal" Margin="0,0,10,10">
         <TextBox x:Name="txtSearch" Width="100" Margin="0,0,10,0" 
-                 lo:TextBoxHelper.Placeholder="Search" VerticalAlignment="Center" TextChanged="txtSearch_TextChanged"/>
+                 lo:TextBoxHelper.Placeholder="Search" VerticalAlignment="Center"/>
 
         <!-- Price Filter Section -->
         <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5">
             <TextBlock Text="Min Price:" VerticalAlignment="Center" Margin="0,0,5,0"/>
             <StackPanel Orientation="Horizontal">
-                <RepeatButton x:Name="numMinPriceUp" Content="▲" Width="20" Click="numMinPriceUp_Click"/>
-                <TextBox x:Name="numMinPrice" Width="60" Text="0" TextAlignment="Center" Margin="2,0" TextChanged="numMinPrice_TextChanged"/>
-                <RepeatButton x:Name="numMinPriceDown" Content="▼" Width="20" Click="numMinPriceDown_Click"/>
+                <RepeatButton x:Name="numMinPriceUp" Content="▲" Width="20"/>
+                <TextBox x:Name="numMinPrice" Width="60" Text="0" TextAlignment="Center" Margin="2,0"/>
+                <RepeatButton x:Name="numMinPriceDown" Content="▼" Width="20"/>
             </StackPanel>
         </StackPanel>
 
         <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5">
             <TextBlock Text="Max Price:" VerticalAlignment="Center" Margin="0,0,5,0"/>
             <StackPanel Orientation="Horizontal">
-                <RepeatButton x:Name="numMaxPriceUp" Content="▲" Width="20" Click="numMaxPriceUp_Click"/>
+                <RepeatButton x:Name="numMaxPriceUp" Content="▲" Width="20"/>
                 <TextBox x:Name="numMaxPrice" Width="60" Text="10000" TextAlignment="Center" 
-                         Margin="2,0" TextChanged="numMaxPrice_TextChanged"/>
-                <RepeatButton x:Name="numMaxPriceDown" Content="▼" Width="20" Click="numMaxPriceDown_Click"/>
+                         Margin="2,0"/>
+                <RepeatButton x:Name="numMaxPriceDown" Content="▼" Width="20"/>
             </StackPanel>
         </StackPanel>
 
-        <ComboBox x:Name="cmbCategory" Width="120" Margin="0,0,10,0" SelectionChanged="cmbCategory_SelectionChanged"/>
+        <ComboBox x:Name="cmbCategory" Width="120" Margin="0,0,10,0"/>
 
-        <ComboBox x:Name="cmbSubcategory" Width="120" Margin="0,0,10,0" SelectionChanged="cmbSubcategory_SelectionChanged"/>
+        <ComboBox x:Name="cmbSubcategory" Width="120" Margin="0,0,10,0"/>
 
         <ComboBox x:Name="cmbSort" Width="120" SelectedIndex="0"
-          ItemsSource="{Binding SortOptions}" SelectionChanged="cmbSort_SelectionChanged" />
+          ItemsSource="{Binding SortOptions}"/>
 
 
-        <Button x:Name="btnReset" Content="Reset" Width="70" Click="btnReset_Click"/>
+        <Button x:Name="btnReset" Content="Reset" Width="70"/>
     </StackPanel>
 </UserControl>

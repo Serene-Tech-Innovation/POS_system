@@ -1,4 +1,5 @@
 ﻿using POS.Models.Core;
+using POS.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,6 +14,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using POS.ViewModels;
 
 namespace POS
 {
@@ -21,9 +23,11 @@ namespace POS
     /// </summary>
     public partial class InventoryManagementPage : Page
     {
+        public InventoryManagementViewModel ViewModel { get; set; }
+
         private void ProductFilterControl_FilterChanged(object? sender, FilterChangedEventArgs e)
         {
-            ProductDisplay.ApplyFilter(e);
+            //ProductDisplay.ApplyFilter(e);
         }
 
         private void OnProductClick(Product product)
@@ -47,10 +51,10 @@ namespace POS
         {
             InitializeComponent();
 
-            ProductFilter.RefreshCategories();
-            ProductFilter.FilterChanged += ProductFilterControl_FilterChanged;
+            //ProductFilter.RefreshCategories();
+            //ProductFilter.FilterChanged += ProductFilterControl_FilterChanged;
 
-            ProductDisplay.ProductAddedToCart += OnProductClick;
+            //ProductDisplay.ProductAddedToCart += OnProductClick;
         }
     }
 }

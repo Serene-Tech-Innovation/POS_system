@@ -1,4 +1,5 @@
-﻿using System.Runtime.CompilerServices;
+﻿using POS.ViewModels;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -22,50 +23,12 @@ namespace POS
         public MainWindow()
         {
             InitializeComponent();
-            Login loginPage = new Login();
-            //DashboardPage dashboardPage = new DashboardPage();
-            // Navigate to login page
-            MainFrame.Navigate(loginPage);
-            loginPage.loginButton.Click += (s, e) =>
-            {
-                // Navigate to the new order page after login
-                String username = loginPage.UsernameBox.Text;
-                String password = loginPage.PasswordBox.Password;
-                if(loginPage.ValidateCredentials(username, password))
-                {
-                    String role = loginPage.GetUserRole(username);
-                    if (role == "user")
-                    {
-                        MainFrame.Navigate(new DashboardPage(role));
-                    }
-                    else if (role == "server")
-                    {
-                        MainFrame.Navigate(new OrderPage(this, role));
-                    }
-                    else if (role == "cashier")
-                    {
-                        MainFrame.Navigate(new OrderPage(this, role));
-                    }
-                    else if (role == "moderator")
-                    {
-                        MainFrame.Navigate(new DashboardPage(role));
-                    }
-                    else if (role == "admin")
-                    {
-                        MainFrame.Navigate(new DashboardPage(role));
-                    }
-                    else
-                    {
-                        MessageBox.Show("Invalid role", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                        MainFrame.Navigate(new DashboardPage());
-                    }
-                }
-            };
+            DataContext = new MainWindowViewModel(MainFrame);
         }
 
         internal static MainWindow GetWindow()
-        {
-            return Application.Current.Windows.OfType<MainWindow>().FirstOrDefault();
-        }
+            => Application.Current.Windows
+                          .OfType<MainWindow>()
+                          .FirstOrDefault();
     }
 }

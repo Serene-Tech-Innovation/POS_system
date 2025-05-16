@@ -35,7 +35,7 @@ namespace POS
 
         private void NewOrder_Click(object sender, RoutedEventArgs e)
         {
-            NavigationService.Navigate(new OrderPage(MainWindow.GetWindow(), _role));
+            //NavigationService.Navigate(new OrderPage(MainWindow.GetWindow(), _role));
         }
 
         private void Inventory_Click(object sender, RoutedEventArgs e)
