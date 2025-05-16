@@ -1,4 +1,5 @@
-﻿using System;
+﻿using POS.Models.Core;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -20,9 +21,36 @@ namespace POS
     /// </summary>
     public partial class InventoryManagementPage : Page
     {
+        private void ProductFilterControl_FilterChanged(object? sender, FilterChangedEventArgs e)
+        {
+            ProductDisplay.ApplyFilter(e);
+        }
+
+        private void OnProductClick(Product product)
+        {
+            // Convert Product to EditableProduct before adding to _editableProducts
+            var editableProduct = new EditableProduct(product)
+            {
+                Name = product.Name,
+                Price = product.Price,
+                Stock = product.Stock,
+                Category = product.Category,
+                Subcategory = product.Subcategory
+            };
+
+            InventoryEditor.AddEditableProduct(editableProduct);
+        }
+
+
+
         public InventoryManagementPage()
         {
             InitializeComponent();
+
+            ProductFilter.RefreshCategories();
+            ProductFilter.FilterChanged += ProductFilterControl_FilterChanged;
+
+            ProductDisplay.ProductAddedToCart += OnProductClick;
         }
     }
 }
