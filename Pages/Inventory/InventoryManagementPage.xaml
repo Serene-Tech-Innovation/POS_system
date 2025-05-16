@@ -3,19 +3,44 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:local="clr-namespace:POS"
       Title="Inventory Management">
-    <Grid>
-        <local:Header x:Name="Header" 
-                      HorizontalAlignment="Stretch" 
-                      VerticalAlignment="Top" 
-                      Grid.Row="0"/>
-        <local:ProductFilterControl x:Name="ProductFilter" 
-                            HorizontalAlignment="Stretch" 
-                            Grid.Row="1"/>
-        <local:ProductDisplayControl x:Name="ProductDisplay" 
-                            HorizontalAlignment="Stretch" 
-                            Grid.Row="2"/>
+
+    <Grid Background="White">
+        <!-- Define layout structure -->
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <!-- Header -->
+            <RowDefinition Height="Auto"/>
+            <!-- Filter -->
+            <RowDefinition Height="*"/>
+            <!-- Product Display -->
+            <RowDefinition Height="Auto"/>
+            <!-- Inventory Editor -->
+        </Grid.RowDefinitions>
+
+        <!-- Header always at the top -->
+        <local:Header x:Name="Header"
+                      Grid.Row="0"
+                      HorizontalAlignment="Stretch"
+                      Margin="0,0,0,10"/>
+
+        <!-- Filter section -->
+        <local:ProductFilterControl x:Name="ProductFilter"
+                                    Grid.Row="1"
+                                    Margin="10"
+                                    HorizontalAlignment="Stretch"/>
+
+        <!-- Main product list -->
+        <local:ProductDisplayControl x:Name="ProductDisplay"
+                                     Grid.Row="2"
+                                     Margin="10"
+                                     HorizontalAlignment="Stretch"
+                                     VerticalAlignment="Stretch"/>
+
+        <!-- Inventory editing control at bottom -->
         <local:InventoryEditorControl x:Name="InventoryEditor"
-                                    HorizontalAlignment="Stretch" 
-                                    Grid.Row="3"/>
+                                      Grid.Row="3"
+                                      Margin="10"
+                                      HorizontalAlignment="Stretch"
+                                      VerticalAlignment="Top"/>
     </Grid>
 </Page>
