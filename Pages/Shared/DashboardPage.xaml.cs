@@ -21,6 +21,7 @@ namespace POS
     /// </summary>
     public partial class DashboardPage : Page
     {
+        public string _role = String.Empty;
         public DashboardPage()
         {
             InitializeComponent();
@@ -29,11 +30,12 @@ namespace POS
         public DashboardPage(string role)
         {
             InitializeComponent();
+            _role = role;
         }
 
         private void NewOrder_Click(object sender, RoutedEventArgs e)
         {
-            NavigationService.Navigate(new OrderPage());
+            NavigationService.Navigate(new OrderPage(MainWindow.GetWindow(), _role));
         }
 
         private void Inventory_Click(object sender, RoutedEventArgs e)
