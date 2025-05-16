@@ -23,10 +23,6 @@ namespace POS
         public event Action<Button>? RemoveRequested;
         public event Action<ComboBox>? QuantityUpdated;
 
-        public ShoppingCartControl()
-        {
-            InitializeComponent();
-        }
 
         public void AddProductToCart(Product product)
         {
@@ -59,10 +55,6 @@ namespace POS
             cartListView.ItemsSource = null;
             cartListView.ItemsSource = cartItems;
 
-            foreach (var item in cartItems)
-            {
-                Debug.WriteLine($"Cart Item: {item.Name}, Qty: {item.Quantity}, Price: {item.Price}, Total: {item.TotalPrice}");
-            }
 
             UpdateTotal();
         }
@@ -71,6 +63,11 @@ namespace POS
         {
             decimal total = _cartQuantities.Sum(item => _products[item.Key] * item.Value);
             lblTotal.Content = $"Total: Rs. {total}";
+        }
+
+        public ShoppingCartControl()
+        {
+            InitializeComponent();
         }
 
         private void btnRemove_Click(object sender, RoutedEventArgs e)
@@ -88,7 +85,6 @@ namespace POS
             }
         }
 
-
         private void quantityDropDown_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (sender is ComboBox comboBox && comboBox.DataContext is CartItem item)
@@ -104,6 +100,20 @@ namespace POS
                     QuantityUpdated?.Invoke(comboBox);
                 }
             }
+        }
+
+        private void btnClear_Click(object sender, RoutedEventArgs e)
+        {
+            _cartQuantities.Clear();
+            _products.Clear();
+            UpdateCartDisplay();
+        }
+
+        private void btnCheckout_Click(object sender, RoutedEventArgs e)
+        {
+            ReceiptPrintWindow receiptPrintWindow= new ReceiptPrintWindow(_cartQuantities, _products);
+            Debug.WriteLine("Checkout Pressed");
+            receiptPrintWindow.ShowDialog();
         }
     }
 }

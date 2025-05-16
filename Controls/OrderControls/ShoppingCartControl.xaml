@@ -53,8 +53,8 @@
 
         <StackPanel Orientation="Horizontal">
             <Button x:Name="btnCheckout" Content="Checkout" Background="LawnGreen" 
-                    Width="100" Margin="0,0,10,0"/>
-            <Button x:Name="btnClear" Content="Clear" Background="Red" Width="100"/>
+                    Width="100" Margin="0,0,10,0" Click="btnCheckout_Click"/>
+            <Button x:Name="btnClear" Content="Clear" Background="Red" Width="100" Click="btnClear_Click"/>
         </StackPanel>
     </StackPanel>
 </UserControl>
