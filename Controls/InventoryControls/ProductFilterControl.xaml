@@ -12,34 +12,29 @@
         <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5">
             <TextBlock Text="Min Price:" VerticalAlignment="Center" Margin="0,0,5,0"/>
             <StackPanel Orientation="Horizontal">
-                <RepeatButton x:Name="numMinPriceUp" Content="▲" Width="20"/>
-                <TextBox x:Name="numMinPrice" Width="60" Text="0" TextAlignment="Center" Margin="2,0"/>
-                <RepeatButton x:Name="numMinPriceDown" Content="▼" Width="20"/>
+                <RepeatButton x:Name="numMinPriceUp" Content="▲" Width="20" Click="numMinPriceUp_Click"/>
+                <TextBox x:Name="numMinPrice" Width="60" Text="0" TextAlignment="Center" Margin="2,0" TextChanged="numMinPrice_TextChanged"/>
+                <RepeatButton x:Name="numMinPriceDown" Content="▼" Width="20" Click="numMinPriceDown_Click"/>
             </StackPanel>
         </StackPanel>
 
         <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5">
             <TextBlock Text="Max Price:" VerticalAlignment="Center" Margin="0,0,5,0"/>
             <StackPanel Orientation="Horizontal">
-                <RepeatButton x:Name="numMaxPriceUp" Content="▲" Width="20"/>
+                <RepeatButton x:Name="numMaxPriceUp" Content="▲" Width="20" Click="numMaxPriceUp_Click"/>
                 <TextBox x:Name="numMaxPrice" Width="60" Text="10000" TextAlignment="Center" 
-                         Margin="2,0"/>
-                <RepeatButton x:Name="numMaxPriceDown" Content="▼" Width="20"/>
+                         Margin="2,0" TextChanged="numMaxPrice_TextChanged"/>
+                <RepeatButton x:Name="numMaxPriceDown" Content="▼" Width="20" Click="numMaxPriceDown_Click"/>
             </StackPanel>
         </StackPanel>
 
-        <ComboBox x:Name="cmbCategory" Width="120" Margin="0,0,10,0"/>
+        <ComboBox x:Name="cmbCategory" Width="120" Margin="0,0,10,0" SelectionChanged="cmbCategory_SelectionChanged"/>
 
-        <ComboBox x:Name="cmbSubcategory" Width="120" Margin="0,0,10,0"/>
+        <ComboBox x:Name="cmbSubcategory" Width="120" Margin="0,0,10,0" SelectionChanged="cmbSubcategory_SelectionChanged"/>
 
-        <ComboBox x:Name="cmbSort" Width="120"
-                  SelectedIndex="0">
-            <ComboBoxItem Content="Default"/>
-            <ComboBoxItem Content="Price Low to High"/>
-            <ComboBoxItem Content="Price High to Low"/>
-            <ComboBoxItem Content="A-Z"/>
-            <ComboBoxItem Content="Z-A"/>
-        </ComboBox>
+        <ComboBox x:Name="cmbSort" Width="120" SelectedIndex="0"
+          ItemsSource="{Binding SortOptions}" SelectionChanged="cmbSort_SelectionChanged" />
+
 
         <Button x:Name="btnReset" Content="Reset" Width="70"/>
     </StackPanel>
