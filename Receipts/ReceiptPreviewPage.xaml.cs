@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using POS.Models.Core; // Assuming CartItem and Product models exist here
+using POS.Models.Core; // Assuming CartItem and Products models exist here
 using POS.Models.Transaction;
 
 namespace POS

@@ -18,6 +18,8 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Path = System.IO.Path;
 using POS.Models.Core;
+using POS.ViewModels.Products;
+using Xceed.Wpf.Toolkit.PropertyGrid.Attributes;
 
 
 namespace POS
@@ -27,25 +29,20 @@ namespace POS
     /// </summary>
     public partial class ProductDisplayControl : UserControl
     {
-        // ItemsSource DP for binding the product list
-        public static readonly DependencyProperty ItemsSourceProperty =
-            DependencyProperty.Register(
-                nameof(ItemsSource),
-                typeof(IEnumerable<Product>),
-                typeof(ProductDisplayControl));
 
-        public IEnumerable<Product> ItemsSource
+        public ProductDisplayViewModel ViewModel { get; } = new();
+
+        public static readonly DependencyProperty ItemsSourceProperty =
+            DependencyProperty.Register(nameof(ItemsSource), typeof(IEnumerable<CategoryGroup>), typeof(ProductDisplayControl), new PropertyMetadata(null));
+
+        public IEnumerable<CategoryGroup> ItemsSource
         {
-            get => (IEnumerable<Product>)GetValue(ItemsSourceProperty);
+            get => (IEnumerable<CategoryGroup>)GetValue(ItemsSourceProperty);
             set => SetValue(ItemsSourceProperty, value);
         }
 
-        // Command DP for adding items to cart
         public static readonly DependencyProperty AddToCartCommandProperty =
-            DependencyProperty.Register(
-                nameof(AddToCartCommand),
-                typeof(ICommand),
-                typeof(ProductDisplayControl));
+            DependencyProperty.Register(nameof(AddToCartCommand), typeof(ICommand), typeof(ProductDisplayControl), new PropertyMetadata(null));
 
         public ICommand AddToCartCommand
         {
@@ -56,16 +53,19 @@ namespace POS
         public ProductDisplayControl()
         {
             InitializeComponent();
+            DataContext = this;
+            Loaded += ProductDisplayControl_Loaded;
         }
 
-        // Wire the Add button inside each row to this handler
-        private void AddButton_Click(object sender, RoutedEventArgs e)
+        private void ProductDisplayControl_Loaded(object sender, RoutedEventArgs e)
         {
-            if (sender is Button btn && btn.DataContext is Product p)
-            {
-                if (AddToCartCommand?.CanExecute(p) == true)
-                    AddToCartCommand.Execute(p);
-            }
+            ItemsSource = ViewModel.GroupedProducts;
+        }
+
+        public void RefreshDisplay(IEnumerable<Product> filtered)
+        {
+            ViewModel.UpdateGroupedProducts(filtered);
+            ItemsSource = ViewModel.GroupedProducts;
         }
     }
 }

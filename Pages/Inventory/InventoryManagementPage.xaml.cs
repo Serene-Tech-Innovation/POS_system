@@ -32,7 +32,7 @@ namespace POS
 
         private void OnProductClick(Product product)
         {
-            // Convert Product to EditableProduct before adding to _editableProducts
+            // Convert Products to EditableProduct before adding to _editableProducts
             var editableProduct = new EditableProduct(product)
             {
                 Name = product.Name,

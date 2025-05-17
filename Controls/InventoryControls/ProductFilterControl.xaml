@@ -28,9 +28,9 @@
             </StackPanel>
         </StackPanel>
 
-        <ComboBox x:Name="cmbCategory" Width="120" Margin="0,0,10,0"/>
+        <ComboBox x:Name="cmbCategory" Width="120" Margin="0,0,10,0" ItemsSource="{Binding Category}"/>
 
-        <ComboBox x:Name="cmbSubcategory" Width="120" Margin="0,0,10,0"/>
+        <ComboBox x:Name="cmbSubcategory" Width="120" Margin="0,0,10,0" ItemsSource="{Binding SubCategory}"/>
 
         <ComboBox x:Name="cmbSort" Width="120" SelectedIndex="0"
           ItemsSource="{Binding SortOptions}"/>

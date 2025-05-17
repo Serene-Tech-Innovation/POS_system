@@ -17,7 +17,7 @@ namespace POS.ViewModels
 {
     public class LoginViewModel : INotifyPropertyChanged
     {
-        private string _username = "admin_test";
+        private string _username = "cashier_test";
         private string _password = "hashed_password";
         private string _errorMessage;
         private Visibility _errorVisibility = Visibility.Collapsed;
