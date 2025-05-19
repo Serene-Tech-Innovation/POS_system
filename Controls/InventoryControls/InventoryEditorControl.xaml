@@ -15,13 +15,13 @@
                   Grid.Row="0"
                   IsReadOnly="False">
             <DataGrid.Columns>
-                <DataGridTextColumn Header="Name" Binding="{Binding Name, Mode=TwoWay}" Width="*"/>
-                <DataGridTextColumn Header="Price" Binding="{Binding Price, Mode=TwoWay}" Width="80"/>
-                <DataGridTextColumn Header="Stock" Binding="{Binding Stock, Mode=TwoWay}" Width="60"/>
+                <DataGridTextColumn x:Name="name" Header="Name" Binding="{Binding Name, Mode=TwoWay}" Width="*"/>
+                <DataGridTextColumn x:Name="price" Header="Price" Binding="{Binding Price, Mode=TwoWay}" Width="80"/>
+                <DataGridTextColumn x:Name="stock" Header="Stock" Binding="{Binding Stock, Mode=TwoWay}" Width="60"/>
                 <DataGridTemplateColumn Header="Category" Width="120">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <ComboBox ItemsSource="{Binding CategoryList}"
+                            <ComboBox x:Name="categoryCombo" ItemsSource="{Binding CategoryList}"
                                       DisplayMemberPath="Name"
                                       SelectedItem="{Binding Category, Mode=TwoWay}" />
                         </DataTemplate>
@@ -30,7 +30,7 @@
                 <DataGridTemplateColumn Header="Subcategory" Width="120">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <ComboBox ItemsSource="{Binding Category.Subcategories}"
+                            <ComboBox x:Name="subCategoryCombo" ItemsSource="{Binding Category.Subcategories}"
                                       DisplayMemberPath="Name"
                                       SelectedItem="{Binding Subcategory, Mode=TwoWay}" />
                         </DataTemplate>

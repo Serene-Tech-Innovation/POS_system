@@ -24,12 +24,15 @@ namespace POS
     {
 
         public ObservableCollection<EditableProduct> _editableProducts;
+        public Product _product;
         public List<Category> CategoryList => ProductDataStore.Categories;
 
-        public void AddEditableProduct(EditableProduct product)
+        public void AddEditableProduct(EditableProduct editableProduct, Product product)
         {
-            if (!_editableProducts.Any(p => p.Name == product.Name))
-                _editableProducts.Add(product);
+            if (!_editableProducts.Any(p => p.Name == editableProduct.Name))
+                _editableProducts.Add(editableProduct);
+            _product = product;
+            name.SetValue(TextBox.TextProperty, _product.Name);
         }
 
         public InventoryEditorControl()
@@ -39,9 +42,18 @@ namespace POS
             // Initialize the editable products collection
             //DataContext = ProductDataStore.Products;
             _editableProducts = new ObservableCollection<EditableProduct>();
+            _product = new Product();
+            Loaded += InventoryEditorControl_Loaded;
+            
             ProductGrid.ItemsSource = _editableProducts;
 
             //ProductGrid.DataContext = _editableProducts;
+        }
+
+        private void InventoryEditorControl_Loaded(object sender, RoutedEventArgs e)
+        {
+            //ProductDataStore.GetProduct(_editableProducts.ToString());
+            
         }
 
         private void ApplySingle_Click(object sender, RoutedEventArgs e)
@@ -117,5 +129,6 @@ namespace POS
                 Subcategory = this.Subcategory
             };
         }
+
     }
 }
