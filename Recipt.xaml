@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Receipt" Height="500" Width="300">
     <ScrollViewer VerticalScrollBarVisibility="Auto">
-        <StackPanel Margin="10">
+        <StackPanel x:Name="ReceiptPanel" Margin="10">
 
             <TextBlock Text="PANDEY KHAJA GHAR" FontSize="20" FontWeight="Regular" HorizontalAlignment="Center"/>
             <TextBlock Text="Gatthaghar ,Kathmandu, 5" FontSize="10" HorizontalAlignment="Center"/>

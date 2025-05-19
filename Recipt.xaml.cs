@@ -53,8 +53,36 @@ namespace POS
             totalTextBlock.Text = $"Rs. {total:F2}";
             Discountamt.Text = "Rs. 0.00"; 
         }
+        private void PrintReceipt()
+        {
+            try
+            {
+                PrintDialog printDialog = new PrintDialog();
+            if (printDialog.ShowDialog() == true)
+            {
+              
+                double originalWidth = ReceiptPanel.Width;
+                double originalHeight = ReceiptPanel.Height;
+               
 
-        
+                    ReceiptPanel.Measure(new Size(printDialog.PrintableAreaWidth, printDialog.PrintableAreaHeight));
+                    ReceiptPanel.Arrange(new Rect(new Point(0, 0), ReceiptPanel.DesiredSize));
+
+                    printDialog.PrintVisual(ReceiptPanel, "Receipt");
+                
+
+                
+                ReceiptPanel.Measure(new Size(originalWidth, originalHeight));
+                ReceiptPanel.Arrange(new Rect(new Size(originalWidth, originalHeight)));
+            }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("An error occoured while printing: \n" + ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+
         public class ReceiptItem
         {
             public string Name { get; set; }
@@ -63,7 +91,7 @@ namespace POS
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            this.Close(); 
+            PrintReceipt(); 
         }
     }
 }
