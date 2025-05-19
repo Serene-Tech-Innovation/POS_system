@@ -9,6 +9,12 @@
 
         <TextBlock Text="Price" Margin="0,0,0,5"/>
         <TextBox x:Name="PriceBox" Margin="0,0,0,10"/>
+        
+        <TextBlock Text="Category" Margin="0,0,0,5"/>
+        <ComboBox x:Name="CategoryBox" IsEditable="True" Margin="0,0,0,10"/>
+
+        <TextBlock Text="Sub Category" Margin="0,0,0,5"/>
+        <ComboBox x:Name="SubCategoryBox" IsEditable="True" Margin="0,0,0,10"/>
 
         <TextBlock Text="Stock Quantity" Margin="0,0,0,5"/>
         <TextBox x:Name="StockBox" Margin="0,0,0,20"/>
