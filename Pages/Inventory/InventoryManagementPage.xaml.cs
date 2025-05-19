@@ -38,7 +38,9 @@ namespace POS
                 Subcategory = product.Subcategory
             };
 
-            InventoryEditor.AddEditableProduct(editableProduct);
+            QuickProductEditWindow quickProductEditWindow = new QuickProductEditWindow(editableProduct.ToProduct());
+            quickProductEditWindow.Show();
+            InventoryEditor.AddEditableProduct(editableProduct, editableProduct.ToProduct());
         }
 
 
