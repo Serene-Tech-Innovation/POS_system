@@ -53,32 +53,99 @@ namespace POS
             totalTextBlock.Text = $"Rs. {total:F2}";
             Discountamt.Text = "Rs. 0.00"; 
         }
+
+        //private void PrintReceiptPdf()
+        //{
+        //    try
+        //    {
+        //        PrintDialog printDialog = new PrintDialog();
+        //        if (printDialog.ShowDialog() == true)
+        //        {
+
+        //            double originalWidth = ReceiptPanel.Width;
+        //            double originalHeight = ReceiptPanel.Height;
+
+
+        //            ReceiptPanel.Measure(new Size(printDialog.PrintableAreaWidth, printDialog.PrintableAreaHeight));
+        //            ReceiptPanel.Arrange(new Rect(new Point(0, 0), ReceiptPanel.DesiredSize));
+
+        //            printDialog.PrintVisual(ReceiptPanel, "Receipt");
+
+
+
+        //            ReceiptPanel.Measure(new Size(originalWidth, originalHeight));
+        //            ReceiptPanel.Arrange(new Rect(new Size(originalWidth, originalHeight)));
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        MessageBox.Show("An error occoured while printing: \n" + ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+        //    }
+        //}
+
+
         private void PrintReceipt()
         {
             try
             {
-                PrintDialog printDialog = new PrintDialog();
-            if (printDialog.ShowDialog() == true)
-            {
-              
-                double originalWidth = ReceiptPanel.Width;
-                double originalHeight = ReceiptPanel.Height;
+                // Get list of installed printers (via PrintServer)
+                var printServer = new System.Printing.LocalPrintServer();
+                var queues = printServer.GetPrintQueues(new[] {
+            System.Printing.EnumeratedPrintQueueTypes.Local,
+            System.Printing.EnumeratedPrintQueueTypes.Connections
+        });
+
+                
+                bool hasPrinter = queues.Any(q =>
+                {
+                    try
+                    {
+                        q.Refresh(); 
+                        return !q.IsOffline && q.IsShared && q.QueueStatus == System.Printing.PrintQueueStatus.None;
+                    }
+                    catch
+                    {
+                        return false; 
+                    }
+                });
+
+                if (!hasPrinter)
+                {
+                    //MessageBox.Show("No available printer found or all printers are offline.",
+                    //               "Printer Not Found", MessageBoxButton.OK, MessageBoxImage.Warning);
+
+                    var dialog = new PrinterErrorWindow();
+                    bool? result = dialog.ShowDialog();
+
+                    if (result != true)
+                    {
+                        // User clicked "OK" or closed the dialog, do not print
+                        return;
+                    }
+                    
+                    
+                }
+
                
+                PrintDialog printDialog = new PrintDialog();
+                if (printDialog.ShowDialog() == true)
+                {
+                    double originalWidth = ReceiptPanel.Width;
+                    double originalHeight = ReceiptPanel.Height;
 
                     ReceiptPanel.Measure(new Size(printDialog.PrintableAreaWidth, printDialog.PrintableAreaHeight));
                     ReceiptPanel.Arrange(new Rect(new Point(0, 0), ReceiptPanel.DesiredSize));
 
                     printDialog.PrintVisual(ReceiptPanel, "Receipt");
-                
 
-                
-                ReceiptPanel.Measure(new Size(originalWidth, originalHeight));
-                ReceiptPanel.Arrange(new Rect(new Size(originalWidth, originalHeight)));
-            }
+                    ReceiptPanel.Measure(new Size(originalWidth, originalHeight));
+                    ReceiptPanel.Arrange(new Rect(new Size(originalWidth, originalHeight)));
+                }
             }
             catch (Exception ex)
             {
-                MessageBox.Show("An error occoured while printing: \n" + ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("An error occurred while printing:\n" + ex.Message,
+                                "Print Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -92,6 +159,11 @@ namespace POS
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             PrintReceipt(); 
+        }
+
+        private void Button_Click2(object sender, RoutedEventArgs e)
+        {
+            this.Close();
         }
     }
 }
