@@ -3,7 +3,17 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:l="clr-namespace:POS"
         Title="Print Receipt" Height="600" Width="600">
-    <Grid Margin="10">
-        <Frame x:Name="receiptPreviewPage" Margin="0,0,0,50"/>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Frame x:Name="receiptPreviewPage" Margin="0,0,0,50" Grid.Row="1"/>
+        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center" Margin="10">
+            <Button Content="Print" Width="100" Margin="5" Click="Print_Click"/>
+            <Button Content="Email" Width="100" Margin="5" Click="Email_Click"/>
+            <Button Content="Close" Width="100" Margin="5" Click="Close_Click"/>
+        </StackPanel>
     </Grid>
 </Window>
