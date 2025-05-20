@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -16,7 +17,9 @@ namespace POS
 {
     public partial class Receipt : Window
     {
-       
+
+        private Dictionary<string, int> _cart;
+        private Dictionary<string, decimal> _products;
         public Receipt()
         {
             InitializeComponent();
@@ -25,7 +28,16 @@ namespace POS
         public Receipt(Dictionary<string, int> cartQuantities, Dictionary<string, decimal> products)
         {
             InitializeComponent();
-            LoadReceipt(cartQuantities, products);
+            _cart = cartQuantities;
+            _products = products;
+            Loaded += Receipt_Loaded;
+        }
+
+        private void Receipt_Loaded(object sender, RoutedEventArgs e)
+        {
+            Debug.WriteLine((ReceiptPanel.ActualWidth));
+            Debug.WriteLine((ReceiptPanel.ActualHeight));
+            LoadReceipt(_cart, _products);
         }
 
         private void LoadReceipt(Dictionary<string, int> cart, Dictionary<string, decimal> products)
@@ -84,16 +96,16 @@ namespace POS
         //}
 
 
-        private void PrintReceipt()
+        public void PrintReceipt()
         {
             try
             {
                 // Get list of installed printers (via PrintServer)
                 var printServer = new System.Printing.LocalPrintServer();
                 var queues = printServer.GetPrintQueues(new[] {
-            System.Printing.EnumeratedPrintQueueTypes.Local,
-            System.Printing.EnumeratedPrintQueueTypes.Connections
-        });
+                    System.Printing.EnumeratedPrintQueueTypes.Local,
+                    System.Printing.EnumeratedPrintQueueTypes.Connections
+                });
 
                 
                 bool hasPrinter = queues.Any(q =>
@@ -130,8 +142,11 @@ namespace POS
                 PrintDialog printDialog = new PrintDialog();
                 if (printDialog.ShowDialog() == true)
                 {
-                    double originalWidth = ReceiptPanel.Width;
-                    double originalHeight = ReceiptPanel.Height;
+                    // Get the original size of the ReceiptPanel
+                    double originalWidth = ReceiptPanel.ActualWidth;
+                    double originalHeight = ReceiptPanel.ActualHeight;
+                    
+                    Debug.WriteLine($"Original Width: {originalWidth}, Original Height: {originalHeight}");
 
                     ReceiptPanel.Measure(new Size(printDialog.PrintableAreaWidth, printDialog.PrintableAreaHeight));
                     ReceiptPanel.Arrange(new Rect(new Point(0, 0), ReceiptPanel.DesiredSize));
@@ -159,16 +174,13 @@ namespace POS
         private void printButton_Click(object sender, RoutedEventArgs e)
         {
 
+            PrintReceipt();
         }
 
         private void exitButton_Click(object sender, RoutedEventArgs e)
         {
-            PrintReceipt(); 
-        }
-
-        private void Button_Click2(object sender, RoutedEventArgs e)
-        {
             this.Close();
         }
+
     }
 }
