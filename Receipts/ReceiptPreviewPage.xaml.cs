@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -15,6 +16,9 @@ namespace POS
     {
         private readonly Dictionary<string, int> _cartQuantities;
         private readonly Dictionary<string, decimal> _products;
+
+        
+
 
         public ReceiptPreviewPage()
         {
@@ -66,21 +70,6 @@ namespace POS
             textBlock.Text = $"Rs. {value:F2}";
         }
 
-        private void Print_Click(object sender, RoutedEventArgs e)
-        {
-            //Code to print receipt
-        }
-
-        private void Email_Click(object sender, RoutedEventArgs e)
-        {
-            // Placeholder for emailing receipt logic
-            MessageBox.Show("Feature not implemented yet.");
-        }
-
-        private void Close_Click(object sender, RoutedEventArgs e)
-        {
-            // NavigationService?.GoBack(); // If navigating
-            Window.GetWindow(this)?.Close(); // If in standalone window
-        }
+        
     }
 }

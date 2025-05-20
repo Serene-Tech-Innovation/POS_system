@@ -58,10 +58,5 @@
             </StackPanel>
         </Border>
 
-        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center" Margin="10">
-            <Button Content="Print" Width="100" Margin="5" Click="Print_Click"/>
-            <Button Content="Email" Width="100" Margin="5" Click="Email_Click"/>
-            <Button Content="Close" Width="100" Margin="5" Click="Close_Click"/>
-        </StackPanel>
     </Grid>
 </Page>
