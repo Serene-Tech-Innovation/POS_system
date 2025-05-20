@@ -1,4 +1,4 @@
-﻿<Window x:Class="POS.Recipt"
+﻿<Window x:Class="POS.Receipt"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Receipt" Height="500" Width="300">

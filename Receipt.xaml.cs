@@ -14,15 +14,15 @@ using System.Windows.Shapes;
 
 namespace POS
 {
-    public partial class Recipt : Window
+    public partial class Receipt : Window
     {
        
-        public Recipt()
+        public Receipt()
         {
             InitializeComponent();
         }
 
-        public Recipt(Dictionary<string, int> cartQuantities, Dictionary<string, decimal> products)
+        public Receipt(Dictionary<string, int> cartQuantities, Dictionary<string, decimal> products)
         {
             InitializeComponent();
             LoadReceipt(cartQuantities, products);
@@ -156,7 +156,12 @@ namespace POS
             public string Price { get; set; }
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
+        private void printButton_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void exitButton_Click(object sender, RoutedEventArgs e)
         {
             PrintReceipt(); 
         }
