@@ -124,7 +124,7 @@
                 </ListView>
                 <Label x:Name="lblTotal" Content="Total: Rs.0" FontSize="16" Margin="0,0,0,10"/>
                 <StackPanel Orientation="Horizontal">
-                    <Button x:Name="btnCheckout" Content="Checkout" Background="LawnGreen" Width="100" Click="btnCheckout_Click" Margin="0,0,10,0"/>
+                    <Button x:Name="btnCheckout" Content="Checkout" Background="LawnGreen" Width="100" Height="30" Click="btnCheckout_Click" Margin="0,0,10,0"/>
                     <Button x:Name="clear" Content="Clear" Background="Red" Width="100" Click="clear_Click"/>
                 </StackPanel>
             </StackPanel>
