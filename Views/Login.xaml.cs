@@ -55,6 +55,7 @@ namespace POS
                         int count = Convert.ToInt32(command.ExecuteScalar());
                         isValid = count > 0;  // If count is greater than 0, credentials are valid
                     }
+                    //isValid = true;
                 }
             }
             catch (Exception ex)
@@ -109,6 +110,11 @@ namespace POS
         private void Window_Closed(object sender, EventArgs e)
         {
             App.Current.Shutdown();
+        }
+
+        private void loginButton_Click(object sender, RoutedEventArgs e)
+        {
+
         }
     }
 }

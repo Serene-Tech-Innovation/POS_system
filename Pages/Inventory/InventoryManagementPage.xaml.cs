@@ -1,4 +1,5 @@
 ﻿using POS.Models.Core;
+using POS.Pages.Inventory;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -53,6 +54,21 @@ namespace POS
             ProductFilter.FilterChanged += ProductFilterControl_FilterChanged;
 
             ProductDisplay.ProductAddedToCart += OnProductClick;
+        }
+
+        private void InventoryEditor_Loaded(object sender, RoutedEventArgs e)
+        {
+
+        }
+        private void AddProductButton_Click(object sender, RoutedEventArgs e)
+        {
+            AddProducts addProductWindow = new AddProducts();
+            addProductWindow.ShowDialog();
+        }
+
+        private void InventoryEditor_Loaded_2(object sender, RoutedEventArgs e)
+        {
+
         }
     }
 }

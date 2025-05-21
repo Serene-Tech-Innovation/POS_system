@@ -23,6 +23,12 @@
                                     Grid.Row="1"
                                     Margin="10"
                                     HorizontalAlignment="Stretch"/>
+        <Button x:Name="AddProductButton"
+                Grid.Row="3"
+                Content="Add New Product"
+                Margin="0,0,786,10"
+                
+                Click="AddProductButton_Click" Height="33" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="98"/>
 
         <!-- Main product list -->
         <local:ProductDisplayControl x:Name="ProductDisplay"
@@ -34,8 +40,7 @@
         <!-- Inventory editing control at bottom -->
         <local:InventoryEditorControl x:Name="InventoryEditor"
                                       Grid.Row="3"
-                                      Margin="10"
-                                      HorizontalAlignment="Stretch"
-                                      VerticalAlignment="Top"/>
+                                      Margin="10,0,10,0"
+                                      VerticalAlignment="Center" Loaded="InventoryEditor_Loaded_2"/>
     </Grid>
 </Page>
