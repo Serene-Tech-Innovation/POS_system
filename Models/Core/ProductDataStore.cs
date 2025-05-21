@@ -12,22 +12,33 @@ namespace POS.Models.Core
         public int Stock { get; set; }
         public Category Category { get; set; }
         public Subcategory Subcategory { get; set; }
+        public override string ToString() =>
+            $"Product: {Name}, Price: {Price}, Stock: {Stock}, Category: {Category?.Name}, Subcategory: {Subcategory?.Name}";
     }
 
     public class Category
     {
         public string Name { get; set; }
         public List<Subcategory> Subcategories { get; set; } = new();
+        public override string ToString() =>
+            $"Category: {Name}, Subcategories: [{string.Join(", ", Subcategories.Select(s => s.Name))}]";
     }
 
     public class Subcategory
     {
         public string Name { get; set; }
         public Category ParentCategory { get; set; }
+        public override string ToString() =>
+            $"Subcategory: {Name}, ParentCategory: {ParentCategory?.Name}";
     }
 
     public static class ProductDataStore
     {
+        // Events
+        public static event Action<Product>? ProductUpdated;
+        public static event Action<Category>? CategoryUpdated;
+        public static event Action<Subcategory>? SubcategoryUpdated;
+
         public static List<Product> Products { get; } = new();
         public static List<Category> Categories { get; } = new();
 
@@ -49,6 +60,7 @@ namespace POS.Models.Core
                 existing.Category = product.Category;
                 existing.Subcategory = product.Subcategory;
             }
+            ProductUpdated?.Invoke(product);
         }
 
         // Get category by name
@@ -68,6 +80,7 @@ namespace POS.Models.Core
                 // Update subcategories - here we replace, or you could merge if needed
                 existing.Subcategories = category.Subcategories;
             }
+            CategoryUpdated?.Invoke(category);
         }
 
         // Get subcategory by name inside a category
@@ -100,6 +113,7 @@ namespace POS.Models.Core
                 existingSubcat.ParentCategory = category;
                 // Here you can update other properties if any in Subcategory
             }
+            SubcategoryUpdated?.Invoke(subcategory);
         }
 
         public static void ClearAll()

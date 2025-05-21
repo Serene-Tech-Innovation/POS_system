@@ -31,83 +31,6 @@ namespace POS
 
         private readonly Dictionary<string, string> _productImages = new();
 
-        private void LoadProductsFromDB()
-        {
-            string connString = ConfigurationManager.ConnectionStrings["PostgresConnection"].ConnectionString;
-            using var conn = new NpgsqlConnection(connString);
-            conn.Open();
-
-            ProductDataStore.ClearAll();
-
-            var categories = new Dictionary<int, Category>();
-            var subcategories = new Dictionary<int, Subcategory>();
-
-            // Load Categories
-            using (var cmd = new NpgsqlCommand("SELECT id, name FROM category", conn))
-            using (var reader = cmd.ExecuteReader())
-            {
-                while (reader.Read())
-                {
-                    int id = reader.GetInt32(0);
-                    string name = reader.GetString(1);
-                    var category = new Category { Name = name };
-                    categories[id] = category;
-                    ProductDataStore.SetCategory(category);
-                }
-            }
-
-            // Load Subcategories
-            using (var cmd = new NpgsqlCommand("SELECT id, name, category_id FROM subcategory", conn))
-            using (var reader = cmd.ExecuteReader())
-            {
-                while (reader.Read())
-                {
-                    int id = reader.GetInt32(0);
-                    string name = reader.GetString(1);
-                    int categoryId = reader.GetInt32(2);
-
-                    if (!categories.ContainsKey(categoryId))
-                        continue;
-
-                    var subcategory = new Subcategory
-                    {
-                        Name = name,
-                        ParentCategory = categories[categoryId]
-                    };
-
-                    subcategories[id] = subcategory;
-                    ProductDataStore.SetSubcategory(categories[categoryId].Name, subcategory);
-                }
-            }
-
-            // Load Products
-            using (var cmd = new NpgsqlCommand("SELECT name, price, subcategory_id, image_path FROM item", conn))
-            using (var reader = cmd.ExecuteReader())
-            {
-                while (reader.Read())
-                {
-                    string name = reader.GetString(0);
-                    decimal price = reader.GetDecimal(1);
-                    int subcategoryId = reader.GetInt32(2);
-                    string imagePath = reader.IsDBNull(3) ? "" : reader.GetString(3);
-
-                    if (!subcategories.ContainsKey(subcategoryId))
-                        continue;
-
-                    var subcategory = subcategories[subcategoryId];
-                    var product = new Product
-                    {
-                        Name = name,
-                        Price = price,
-                        Category = subcategory.ParentCategory,
-                        Subcategory = subcategory
-                    };
-
-                    ProductDataStore.SetProduct(product);
-                }
-            }
-        }
-
         private void DisplayProducts()
         {
             flowPanelItems.Children.Clear();
@@ -329,7 +252,23 @@ namespace POS
         public ProductDisplayControl()
         {
             InitializeComponent();
-            LoadProductsFromDB();
+            
+            ProductDataStore.ProductUpdated += (product) =>
+            {
+                DisplayProducts();
+                // Update the product image path if it has changed
+            };
+            ProductDataStore.CategoryUpdated += Category =>
+            {
+                DisplayProducts();
+                // Refresh the display if needed
+            };
+            ProductDataStore.SubcategoryUpdated += Subcategory =>
+            {
+                DisplayProducts();
+                // Refresh the display if needed
+            };
+
             DisplayProducts();
         }
 

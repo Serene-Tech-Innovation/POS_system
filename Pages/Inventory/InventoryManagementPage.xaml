@@ -41,6 +41,6 @@
         <local:InventoryEditorControl x:Name="InventoryEditor"
                                       Grid.Row="3"
                                       Margin="10,0,10,0"
-                                      VerticalAlignment="Center" Loaded="InventoryEditor_Loaded_2"/>
+                                      VerticalAlignment="Center"/>
     </Grid>
 </Page>

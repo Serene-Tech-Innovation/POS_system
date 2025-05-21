@@ -112,6 +112,17 @@ namespace POS
             InitializeComponent();
             DataContext = this; // crucial for binding SortOptions
             Loaded += ProductFilterControl_Loaded;
+            
+            ProductDataStore.CategoryUpdated += Category =>
+            {
+                RefreshCategories();
+                // Refresh the display if needed
+            };
+            ProductDataStore.SubcategoryUpdated += Subcategory =>
+            {
+                RefreshCategories();
+                // Refresh the display if needed
+            };
         }
 
         public void RefreshCategories()

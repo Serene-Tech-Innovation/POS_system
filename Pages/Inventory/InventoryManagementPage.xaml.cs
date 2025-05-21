@@ -56,19 +56,11 @@ namespace POS
             ProductDisplay.ProductAddedToCart += OnProductClick;
         }
 
-        private void InventoryEditor_Loaded(object sender, RoutedEventArgs e)
-        {
-
-        }
         private void AddProductButton_Click(object sender, RoutedEventArgs e)
         {
-            AddProducts addProductWindow = new AddProducts();
+            QuickProductEditWindow addProductWindow = new QuickProductEditWindow();
             addProductWindow.ShowDialog();
         }
 
-        private void InventoryEditor_Loaded_2(object sender, RoutedEventArgs e)
-        {
-
-        }
     }
 }
